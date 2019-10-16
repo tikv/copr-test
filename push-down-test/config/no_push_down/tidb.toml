@@ -1,0 +1,6 @@
+port = 4005
+store = "mocktikv"
+path = "/tmp/copr_test/tidb_no_push_down"
+
+[status]
+report-status = false
