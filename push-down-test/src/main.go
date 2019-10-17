@@ -194,7 +194,7 @@ func diffRunResult(testCasePath string,
 				"Statement: #%d - %s\n"+
 				"NoPushDown Output: %s\n"+
 				"PushDown Output: %s\n"+
-				"PushDownWithBatch Output: %s\n",
+				"PushDownWithBatch Output: %s\n\n",
 				testCasePath,
 				noPushDownLog.stmtIndex,
 				noPushDownLog.stmt,

@@ -6,6 +6,9 @@ This is the purpose of `copr-test`.
 
 The basic principle of `copr-test` is to execute test cases in TiDB standalone (with `mocktikv`) and TiDB cluster (with `Coprocessor`)
 and compare the execution result. We think the TiDB and Coprocessor is consistent if the results in both sides are same, vice versa.
+We use `github.com/pingcap/parser` to parse every file, and iterator the []ast.StmtNode to run every SQL.
+So if there is any error in the test SQL file, the error msg is hard to read. Creating the database and tables in you local database
+and use IDE(such as CLion) to write SQL file as test case is recommended.
 
 The `Coprocessor` contains two execution frameworks, `Batch` (vectorized execution engine) and `Non-Batch` in current
 stage (remove the `Non-Batch` version is in plan). So all test cases should be passed in the following execution environment.
@@ -22,22 +25,23 @@ is determined by the function `canFuncBePushed` in TiDB [tidb-expression/expr_to
 
 We have added a failpoint `PushDownTestSwitcher` in the function `canFuncBePushed` to hijack our customized push down condition.
 And we will push down all functions in our integration tests using `export GO_FAILPOINTS="github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"all\")"`, see the `run_tests.sh`[./push-down-test/run-tests.sh].
+The test will fail If the test contains some functions which don't be implemented in the Coprocessor.
 
 ## How to add test cases?
 
 - Test cases location
     
-    All test cases should be placed in `push-down-test/sql` directory, and all SQL files will be executed in lexical order by file name.
+    All test cases should be placed in `push-down-test/sql` directory (sub dir of push-down-test/sql is also allowed, you can originate
+    them in different dir.), and all SQL files will be executed in lexical order by file name.
     So if your case want to prepare some data before running tests, you can add some suffix to the file name, eg: `xxx.1.sql` and `xxx.2.sql`.
     
 - Test case file name convention
 
-    All test cases should have the suffix `.sql` as file extension. But you can add a `xxx.md` documentation to explain the complicated cases.
+    How about: Files ends with .sql suffix will be treated as test cases and other files will be ignored.
     
 - Test case example
 
     ```sql
-    use push_down_test_db;
     create table tb2
     (
     date datetime,
@@ -62,7 +66,7 @@ run the integration test in your local environment.
 - PD: [PD](https://github.com/pingcap/pd) is the abbreviation for Placement Driver. It is used to manage and schedule the TiKV cluster.
 
     1. Make sure ​Go​ (version 1.12) is installed.
-    2. Use make to install PD. PD is installed in the bin directory.
+    2. Use `make` to build the PD (the binary will be placed in the `bin` directory).
 
 - TiKV: [Building and setting up a development workspace](https://github.com/tikv/tikv/blob/master/CONTRIBUTING.md#building-and-setting-up-a-development-workspace)
 - TiDB: [Building TiDB on a local OS/shell environment](https://github.com/pingcap/community/blob/master/CONTRIBUTING.md#building-tidb-on-a-local-osshell-environment)
@@ -87,5 +91,5 @@ cd ~/devel/opensource/tikv
 make
 
 cd ~/devel/opensource/copr-test
-pd_bin=~/devel/opensource/pd/bin/pd-server tikv_bin=~/devel/opensource/tikv/target/release/tikv-server make
+pd_bin=~/devel/opensource/pd/bin/pd-server tikv_bin=~/devel/opensource/tikv/target/release/tikv-server make push-down-test
 ```

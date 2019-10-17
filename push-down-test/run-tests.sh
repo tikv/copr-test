@@ -32,8 +32,8 @@ readonly log_level="warn"
 # This log location should be the same as which in CI script
 # https://internal.pingcap.net/idc-jenkins/job/tikv_ghpr_integration_pushdownfunc_test/configure
 readonly no_push_down_tidb_log_file="/tmp/copr_test/tidb_no_push_down.log"
-readonly push_down_no_batch_tidb_log_file="/tmp/copr_test/tidb_push_downno_batch.log"
-readonly push_down_with_batch_tidb_log_file="/tmp/copr_test/tidb_push_downwith_batch.log"
+readonly push_down_no_batch_tidb_log_file="/tmp/copr_test/tidb_push_down_no_batch.log"
+readonly push_down_with_batch_tidb_log_file="/tmp/copr_test/tidb_push_down_with_batch.log"
 readonly tikv_no_batch_log_file="/tmp/copr_test/tikv_no_batch.log"
 readonly tikv_with_batch_log_file="/tmp/copr_test/tikv_with_batch.log"
 readonly pd_no_batch_log_file="/tmp/copr_test/pd_no_batch.log"
@@ -174,7 +174,7 @@ function wait_for_tidb() {
     fi
     sleep 3
   done
-  echo 'TiDB startup successfully: push down without batch'
+  echo 'TiDB startup successfully: push_down_without_batch'
 
   i=0
   while ! mysql -u$tidb_user -h$tidb_host -P$push_down_with_batch_tidb_port --default-character-set utf8 -e 'show databases;'; do

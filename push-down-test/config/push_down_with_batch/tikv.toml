@@ -8,7 +8,7 @@ status-addr = ""
 endpoints = ["127.0.0.1:4479"]
 
 [storage]
-data-dir = "/tmp/tikv_with_batch"
+data-dir = "/tmp/copr_test/tikv_with_batch"
 
 [rocksdb]
 max-open-files = 64

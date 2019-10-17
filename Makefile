@@ -3,4 +3,4 @@
 all: push-down-test
 
 push-down-test:
-	cd push-down-test && sh run-tests.sh
+	cd push-down-test && bash run-tests.sh

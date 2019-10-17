@@ -8,11 +8,10 @@ status-addr = ""
 endpoints = ["127.0.0.1:3379"]
 
 [storage]
-data-dir = "/tmp/tikv_no_batch"
+data-dir = "/tmp/copr_test/tikv_no_batch"
 
 [rocksdb]
 max-open-files = 64
 
 [raftdb]
 max-open-files = 64
-
