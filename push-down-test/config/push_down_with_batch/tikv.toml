@@ -1,0 +1,17 @@
+[server]
+end-point-enable-batch-if-possible = true
+## Listening address.
+addr = "127.0.0.1:20162"
+status-addr = ""
+
+[pd]
+endpoints = ["127.0.0.1:4479"]
+
+[storage]
+data-dir = "/tmp/copr_test/tikv_with_batch"
+
+[rocksdb]
+max-open-files = 64
+
+[raftdb]
+max-open-files = 64

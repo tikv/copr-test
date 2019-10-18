@@ -1,0 +1,6 @@
+port = 4007
+store = "tikv"
+path = "127.0.0.1:4479"
+
+[status]
+report-status = false
