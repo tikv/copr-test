@@ -1,0 +1,9 @@
+.idea/
+.*.swp
+.*.swo
+
+LOCK
+db/
+last_tikv.toml
+raft/
+tidb-slow.log

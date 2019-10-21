@@ -141,11 +141,12 @@ func runSingleStatement(stmt string, stmtIndex int, db *sql.DB, logChan chan *st
 	return !hasError
 }
 
-func diffRunResult(testCasePath string,
+func diffRunResult(
+	testCasePath string,
 	noPushDownLogChan chan *statementLog,
 	pushDownLogChan chan *statementLog,
-	pushDownWithBatchLogChan chan *statementLog) bool {
-
+	pushDownWithBatchLogChan chan *statementLog,
+) bool {
 	execOkStatements := 0
 	execFailStatements := 0
 	diffFailStatements := 0
@@ -214,6 +215,8 @@ func diffRunResult(testCasePath string,
 				string(noPushDownLog.output.Bytes()))
 		} else {
 			// Output is same and there is no errors
+			log.Printf("Info: run sql\n%s\n", noPushDownLog.stmt)
+
 			successQueries.WriteString(noPushDownLog.stmt)
 			successQueries.WriteByte('\n')
 		}
