@@ -1,9 +1,19 @@
 .idea/
-.*.swp
-.*.swo
+*.iml
+*.swp
+.DS_Store
 
-LOCK
-db/
-last_tikv.toml
-raft/
-tidb-slow.log
+*.log
+
+*.fail.go
+
+bin
+coverage.out
+tags
+profile.coverprofile
+explain_test
+cmd/explaintest/explain-test.out
+cmd/explaintest/explaintest_tidb-server
+tools/bin/
+vendor
+/_tools/
