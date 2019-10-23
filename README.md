@@ -1,43 +1,38 @@
 ## What is `copr-test`
 
-The `copr-test` is the integration test for `Coprocessor` of the TiKV. The `Coprocessor` is used to execute TiDB push-down
-executor to improve the database performance. It's important to keep execution result consistent between TiDB and `Coprocessor`.
-This is the purpose of `copr-test`.
+`copr-test` is the integration test for the `Coprocessor` subproject of TiKV. `Coprocessor` executes TiDB push-down
+executors to improve database performance. The purpose of `copr-test` to keep execution results consistent between TiDB and `Coprocessor`. 
 
-The basic principle of `copr-test` is to execute test cases in TiDB standalone (with `mocktikv`) and TiDB cluster (with `Coprocessor`)
-and compare the execution result. We think the TiDB and Coprocessor is consistent if the results in both sides are same, vice versa.
-We use `github.com/pingcap/parser` to parse every file, and iterator the []ast.StmtNode to run every SQL.
-So if there is any error in the test SQL file, the error msg is hard to read. Creating the database and tables in you local database
-and use IDE(such as CLion) to write SQL file as test case is recommended.
+The basic principle of `copr-test` is to execute test cases on a standalone TiDB (with `mocktikv`) and on a TiDB cluster (with `Coprocessor`), 
+and compare the execution results. We can conclude that TiDB and Coprocessor are consistent if the results on both sides are the same, and vice versa.
 
-The `Coprocessor` contains two execution frameworks, `Batch` (vectorized execution engine) and `Non-Batch` in current
-stage (remove the `Non-Batch` version is in plan). So all test cases should be passed in the following execution environment.
+`Coprocessor` contains two execution frameworks, `Batch` (vectorized execution engine) and `Non-Batch` in the current
+stage (removing the `Non-Batch` version is on the schedule). So all test cases must be passed in the following execution environments:
 
-1. TiDB with mocktikv
-2. TiDB + TiKV with Non-Batch
-3. TiDB + TiKV with Batch
+- TiDB with mocktikv
+- TiDB + TiKV with Non-Batch
+- TiDB + TiKV with Batch
 
 ### How do I know which expressions will be pushed down?
 
-The `Coprocessor` does not implement all builtin functions (or implemented but not tested fully) which have implemented by TiDB,
-so we can only push down the functions that Coprocessor has implemented and fully tested. Whether a function is pushed down or not
-is determined by the function `canFuncBePushed` in TiDB [tidb-expression/expr_to_pb.go](https://github.com/pingcap/tidb/blob/a090e6be2991bf85b18fcdb096f84d41f4f6bd85/expression/expr_to_pb.go#L303)
+The `Coprocessor` subproject does not implement (or implemented but not fully tested) of TiDB, 
+so we can only push down the functions that are implemented and fully tested for `Coprocessor`. Whether a function is pushed down or not
+is determined by the `canFuncBePushed` function in TiDB [tidb-expression/expr_to_pb.go](https://github.com/pingcap/tidb/blob/a090e6be2991bf85b18fcdb096f84d41f4f6bd85/expression/expr_to_pb.go#L303)
 
-We have added a failpoint `PushDownTestSwitcher` in the function `canFuncBePushed` to hijack our customized push down condition.
-And we will push down all functions in our integration tests using `export GO_FAILPOINTS="github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"all\")"`, see the `run_tests.sh`[./push-down-test/run-tests.sh].
-The test will fail If the test contains some functions which don't be implemented in the Coprocessor.
+We have added a failpoint `PushDownTestSwitcher` in the `canFuncBePushed` function to hijack our customized push-down conditions.
+All functions in our integration tests will be pushed down via `export GO_FAILPOINTS="github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"all\")"`.  For details, see `run_tests.sh`[./push-down-test/run-tests.sh].
+The test will fail If the test contains some functions that are not implemented in `Coprocessor`.
 
 ## How to add test cases?
 
 - Test cases location
     
-    All test cases should be placed in `push-down-test/sql` directory (sub dir of push-down-test/sql is also allowed, you can originate
-    them in different dir.), and all SQL files will be executed in lexical order by file name.
+    All test cases should be placed in the `push-down-test/sql` directory (a sub-directory of push-down-test/sql is also allowed, You can organize them in different directories), and all SQL files will be executed in alphabetical order by file names.
     So if your case want to prepare some data before running tests, you can add some suffix to the file name, eg: `xxx.1.sql` and `xxx.2.sql`.
     
 - Test case file name convention
 
-    How about: Files ends with .sql suffix will be treated as test cases and other files will be ignored.
+    Files ending with the .sql suffix will be treated as test cases and other files will be ignored.
     
 - Test case example
 
@@ -56,23 +51,23 @@ The test will fail If the test contains some functions which don't be implemente
     from tb2;
     ```
 
-## How to run it in local environment?
+## How to run a test case in your local environment?
 
-Because of the `copr-test` is the integration test for TiKV Coprocessor, so there is a minimal requirement if you want
-run the integration test in your local environment.
+As the integration test for TiKV Coprocessor, `copr-test` requires a minimal requirement to run 
+run in your local environment.
 
-### Minimal requirement components
+### Minimal requirements per component
 
 - PD: [PD](https://github.com/pingcap/pd) is the abbreviation for Placement Driver. It is used to manage and schedule the TiKV cluster.
 
     1. Make sure ​Go​ (version 1.12) is installed.
-    2. Use `make` to build the PD (the binary will be placed in the `bin` directory).
+    2. Use `make` to build PD (the binary will be placed in the `bin` directory).
 
 - TiKV: [Building and setting up a development workspace](https://github.com/tikv/tikv/blob/master/CONTRIBUTING.md#building-and-setting-up-a-development-workspace)
 - TiDB: [Building TiDB on a local OS/shell environment](https://github.com/pingcap/community/blob/master/CONTRIBUTING.md#building-tidb-on-a-local-osshell-environment)
 
-The `copr-test` integration test will retrieve the source code of the TiDB master branch automatically (but you can specify the
-TiDB source code path by `$tidb_src_dir` instead of using remote latest TiDB source code), so you should only prepare
+The `copr-test` integration test retrieves the source code of the TiDB master branch automatically, but you can also
+specify a local path by using `$tidb_src_dir`. This  means you should only prepare
 the build environment for it. The binaries of TiKV and PD should be provided by environment variables (`$pd_bin` and `$tikv_bin`).
 
 ### Example guide
