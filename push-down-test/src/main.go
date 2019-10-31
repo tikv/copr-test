@@ -190,18 +190,24 @@ func diffRunResult(
 		if !bytes.Equal(noPushDownLog.output.Bytes(), pushDownLog.output.Bytes()) ||
 			!bytes.Equal(pushDownLog.output.Bytes(), pushDownWithBatchLog.output.Bytes()) {
 			diffFailStatements++
-			log.Printf("Test fail: Outputs are not matching.\n"+
-				"Test case: %s\n"+
-				"Statement: #%d - %s\n"+
-				"NoPushDown Output: %s\n"+
-				"PushDown Output: %s\n"+
-				"PushDownWithBatch Output: %s\n\n",
+			log.Println(
+				"\n------------------------------------------------------------------------------------------------------\n",
+				"Test fail: Outputs are not matching.\n",
+				"Test case: ",
 				testCasePath,
+				"\nStatement: #",
 				noPushDownLog.stmtIndex,
+				"\n",
 				noPushDownLog.stmt,
+				"\nNoPushDown Output:\n",
 				string(noPushDownLog.output.Bytes()),
+				"\nPushDown Output:\n",
 				string(pushDownLog.output.Bytes()),
-				string(pushDownWithBatchLog.output.Bytes()))
+				"\nPushDownWithBatch Output:\n",
+				string(pushDownWithBatchLog.output.Bytes()),
+				"\n------------------------------------------------------------------------------------------------------\n",
+				"",
+			)
 		} else if noPushDownLog.hasError {
 			// If output is the same, but there are errors when executing the SQL, output it as well (but tests
 			// will not fail).
