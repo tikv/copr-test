@@ -53,7 +53,7 @@ values (-36893488147419103232,
         -36893488147419103232, -36893488147419103232, -36893488147419103232,
         -36893488147419103232);
 
-cast to signed int
+-- cast to signed int
 select *
 from tb10
 where cast(int_s as signed int) = int_s;
@@ -137,7 +137,7 @@ from tb10
 where cast(json_num as signed int) = bigint_s;
 show warnings;
 
-# cast to unsigned int
+--  cast to unsigned int
 select *
 from tb10
 where cast(int_s as unsigned int) = int_u;
@@ -221,7 +221,7 @@ where cast(json_num as unsigned int) = bigint_u;
 show warnings;
 
 
-# cast to real
+--  cast to real
 select *
 from tb10
 where cast(int_s as real) = float_num;
@@ -304,7 +304,7 @@ from tb10
 where cast(json_num as real) = double_num;
 show warnings;
 
-# cast to float
+--  cast to float
 select *
 from tb10
 where cast(int_s as float) = float_num;
@@ -387,7 +387,7 @@ from tb10
 where cast(json_num as float) = double_num;
 show warnings;
 
-# cast to double
+--  cast to double
 select *
 from tb10
 where cast(int_s as double) = float_num;
@@ -470,7 +470,7 @@ from tb10
 where cast(json_num as double) = double_num;
 show warnings;
 
-# cast to string
+--  cast to string
 select *
 from tb10
 where cast(int_s as char(30)) = char_num;
@@ -516,7 +516,7 @@ select *
 from tb10
 where cast(int_s as decimal(65, 10)) = decimal_num;
 
-# cast to decimal
+--  cast to decimal
 select *
 from tb10
 where cast(int_s as decimal(65, 10)) = decimal_num;
@@ -558,9 +558,9 @@ from tb10
 where cast(json_num as decimal(65, 10)) = decimal_num;
 show warnings;
 
-# TODO, the execution plan say they are push downed to TiKV,
-#  however, they may run ScalarFunc's cast but not rpn's cast
-# cast to time
+--  TODO, the execution plan say they are push downed to TiKV,
+--   however, they may run ScalarFunc's cast but not rpn's cast
+--  cast to time
 select *
 from tb10
 where cast(int_s as time) = time_num;
@@ -602,7 +602,7 @@ from tb10
 where cast(json_num as time) = time_num;
 show warnings;
 
-# cast to json
+--  cast to json
 select *
 from tb10
 where cast(int_s as json) = json_num;
