@@ -25,6 +25,8 @@ case
 if
 ifnull
 coalesce
+sign
+sqrt
 json_type
 json_extract
 json_unquote
