@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"io/ioutil"
 	"log"
+	"strings"
 
 	"github.com/pingcap/errors"
 )
@@ -126,7 +127,8 @@ func mustDBClose(db *sql.DB) {
 	}
 }
 
-func mustDBOpen(connString string) *sql.DB {
+func mustDBOpen(connStringPattern string, dbName string) *sql.DB {
+	connString := strings.Replace(connStringPattern, "{db}", dbName, -1)
 	db, err := sql.Open("mysql", connString)
 	if err != nil {
 		log.Panicf("Failed to open DB [%s]: %v\n", connString, err)
