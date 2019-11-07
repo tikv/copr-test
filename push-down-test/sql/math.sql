@@ -1,6 +1,2 @@
-SELECT sign(-3);
-SELECT sign(0);
-SELECT sign(3);
-SELECT sqrt(-1);
-SELECT sqrt(0);
-SELECT sqrt(4);
+SELECT SIGN(-3), SIGN(0), SIGN(3);
+SELECT SQRT(-1), SQRT(0), SQRT(4);
