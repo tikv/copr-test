@@ -243,10 +243,9 @@ echo "+ Start test"
   -conn-no-push "${tidb_user}@tcp(${tidb_host}:${no_push_down_tidb_port})/{db}?allowNativePasswords=true" \
   -conn-push "${tidb_user}@tcp(${tidb_host}:${push_down_tidb_port})/{db}?allowNativePasswords=true" \
   -conn-push-with-batch "${tidb_user}@tcp(${tidb_host}:${push_down_with_batch_tidb_port})/{db}?allowNativePasswords=true"
+readonly exit_code=$?
 
 echo "+ Test finished"
-
-readonly exit_code=$?
 echo "  - ${push_down_test_bin} exit code is ${exit_code}"
 if [[ $exit_code -ne 2 && $exit_code -ne 0 ]]; then
   cat_log
