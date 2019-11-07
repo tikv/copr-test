@@ -107,8 +107,7 @@ func runTestCase(testCasePath string) bool {
 	go runStatements(noPushDownLogChan, *connStrNoPush, statements)
 	go runStatements(pushDownLogChan, *connStrPush, statements)
 	go runStatements(pushDownWithBatchLogChan, *connStrPushWithBatch, statements)
-	ok := diffRunResult(testCasePath, noPushDownLogChan, pushDownLogChan, pushDownWithBatchLogChan)
-	return ok
+	return diffRunResult(testCasePath, noPushDownLogChan, pushDownLogChan, pushDownWithBatchLogChan)
 }
 
 func runStatements(logChan chan *statementLog, connString string, statements []string) {
