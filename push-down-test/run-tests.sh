@@ -76,7 +76,7 @@ function run_tikvs() {
 function run_tidbs() {
   echo
   echo "+ Starting TiDB"
-  export GO_FAILPOINTS=""
+  export GO_FAILPOINTS="github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\")"
   "$tidb_bin" -log-file "$no_push_down_tidb_log_file" -config "$no_push_down_config_dir"/tidb.toml -L ${log_level} &
   tidb_no_push_down_pid=$!
 
