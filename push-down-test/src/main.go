@@ -25,6 +25,7 @@ var connStrPush *string
 var connStrPushWithBatch *string
 var outputSuccessQueries *bool
 var dbName *string
+var verboseOutput *bool
 
 type statementLog struct {
 	output    *bytes.Buffer
@@ -57,13 +58,16 @@ func readAndParseSQLText(sqlFilePath string) []ast.StmtNode {
 
 func prepareDB(connString string) {
 	log.Printf("Preparing database [%s] for [%s]...", *dbName, connString)
-	db := mustDBOpen(connString)
+	db := mustDBOpen(connString, "")
 	mustDBExec(db, "drop database if exists `"+*dbName+"`;")
 	mustDBExec(db, "create database `"+*dbName+"`;")
 	mustDBClose(db)
 }
 
 func iterateTestCases() {
+	successCases := 0
+	failedCases := 0
+
 	err := filepath.Walk(testCaseDir, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
@@ -72,15 +76,23 @@ func iterateTestCases() {
 			return nil
 		}
 		log.Printf("Testing [%s]...", path)
-		runTestCase(path)
+		if runTestCase(path) {
+			successCases++
+		} else {
+			failedCases++
+		}
 		return nil
 	})
 	if err != nil {
 		log.Panicf("Failed to read test case directory [%s]: %v\n", testCaseDir, err)
 	}
+	log.Printf("All test finished: pass cases: %d, fail cases: %d", successCases, failedCases)
+	if failedCases > 0 {
+		os.Exit(2) // Diff fail results in exit code 2 to distinguish with panic
+	}
 }
 
-func runTestCase(testCasePath string) {
+func runTestCase(testCasePath string) bool {
 	log.Printf("Parsing...")
 	stmtAsts := readAndParseSQLText(testCasePath)
 	statements := make([]string, 0, len(stmtAsts))
@@ -95,16 +107,11 @@ func runTestCase(testCasePath string) {
 	go runStatements(noPushDownLogChan, *connStrNoPush, statements)
 	go runStatements(pushDownLogChan, *connStrPush, statements)
 	go runStatements(pushDownWithBatchLogChan, *connStrPushWithBatch, statements)
-	ok := diffRunResult(testCasePath, noPushDownLogChan, pushDownLogChan, pushDownWithBatchLogChan)
-	if !ok {
-		log.Printf("Test failed. Stop.")
-		os.Exit(2) // Diff fail results in exit code 2 to distinguish with panic
-	}
+	return diffRunResult(testCasePath, noPushDownLogChan, pushDownLogChan, pushDownWithBatchLogChan)
 }
 
 func runStatements(logChan chan *statementLog, connString string, statements []string) {
-	db := mustDBOpen(connString)
-	mustDBExec(db, "use `"+*dbName+"`;")
+	db := mustDBOpen(connString, *dbName)
 	for i, stmt := range statements {
 		runSingleStatement(stmt, i, db, logChan)
 	}
@@ -165,10 +172,10 @@ func diffRunResult(
 			log.Panicf("Internal error: NoPushDown channel drained\n")
 		}
 		if !ok2 {
-			log.Panicf("Internal error: PushDown channel drained\n")
+			log.Panicf("Internal error: PushDownWithoutVec channel drained\n")
 		}
 		if !ok3 {
-			log.Panicf("Internal error: PushDownWithBatch channel drained\n")
+			log.Panicf("Internal error: PushDownWithVec channel drained\n")
 		}
 		if noPushDownLog.stmt != pushDownLog.stmt ||
 			pushDownLog.stmt != pushDownWithBatchLog.stmt {
@@ -181,51 +188,72 @@ func diffRunResult(
 				noPushDownLog.stmtIndex, pushDownLog.stmtIndex, pushDownWithBatchLog.stmtIndex)
 		}
 
+		hasError := false
 		if noPushDownLog.hasError || pushDownLog.hasError || pushDownWithBatchLog.hasError {
 			execFailStatements++
+			hasError = true
 		} else {
 			execOkStatements++
 		}
 
-		if !bytes.Equal(noPushDownLog.output.Bytes(), pushDownLog.output.Bytes()) ||
-			!bytes.Equal(pushDownLog.output.Bytes(), pushDownWithBatchLog.output.Bytes()) {
+		diffFail := false
+		if hasError {
+			// If there are errors, currently we don't check content and only check existence
+			if !noPushDownLog.hasError || !pushDownLog.hasError || !pushDownWithBatchLog.hasError {
+				diffFail = true
+			}
+		} else {
+			// If there are no error, check content
+			if !bytes.Equal(noPushDownLog.output.Bytes(), pushDownLog.output.Bytes()) ||
+				!bytes.Equal(pushDownLog.output.Bytes(), pushDownWithBatchLog.output.Bytes()) {
+				diffFail = true
+			}
+		}
+
+		if diffFail {
 			diffFailStatements++
 			log.Printf("Test fail: Outputs are not matching.\n"+
 				"Test case: %s\n"+
 				"Statement: #%d - %s\n"+
-				"NoPushDown Output: %s\n"+
-				"PushDown Output: %s\n"+
-				"PushDownWithBatch Output: %s\n\n",
+				"NoPushDown Output: \n%s\n"+
+				"PushDownWithoutVec Output: \n%s\n"+
+				"PushDownWithVec Output: \n%s\n\n",
 				testCasePath,
 				noPushDownLog.stmtIndex,
 				noPushDownLog.stmt,
 				string(noPushDownLog.output.Bytes()),
 				string(pushDownLog.output.Bytes()),
 				string(pushDownWithBatchLog.output.Bytes()))
-		} else if noPushDownLog.hasError {
-			// If output is the same, but there are errors when executing the SQL, output it as well (but tests
-			// will not fail).
-			log.Printf("Warn: Execute failed but outputs are matching.\n"+
-				"Test case: %s\n"+
-				"Statement: #%d - %s\n"+
-				"Output: %s\n",
-				testCasePath,
-				noPushDownLog.stmtIndex,
-				noPushDownLog.stmt,
-				string(noPushDownLog.output.Bytes()))
+		} else if hasError {
+			if *verboseOutput {
+				log.Printf("Warn: Execute fail, diff skipped.\n"+
+					"Test case: %s\n"+
+					"Statement: #%d - %s\n"+
+					"NoPushDown Output: \n%s\n"+
+					"PushDownWithoutVec Output: \n%s\n"+
+					"PushDownWithVec Output: \n%s\n\n",
+					testCasePath,
+					noPushDownLog.stmtIndex,
+					noPushDownLog.stmt,
+					string(noPushDownLog.output.Bytes()),
+					string(pushDownLog.output.Bytes()),
+					string(pushDownWithBatchLog.output.Bytes()))
+			}
 		} else {
-			// Output is same and there is no errors
-			log.Printf("Info: run sql\n%s\n", noPushDownLog.stmt)
+			if *verboseOutput {
+				// Output is same and there is no errors
+				log.Printf("Info: SQL result is idential: \n%s\n", noPushDownLog.stmt)
+			}
 
 			successQueries.WriteString(noPushDownLog.stmt)
 			successQueries.WriteByte('\n')
 		}
 	}
 
-	log.Printf("Test summary: Success queries: %d, fail (and ignore) queries: %d (where there are %d non-matching queries)",
+	log.Printf("Test summary: non-matching queries: %d, success queries: %d, skipped queries: %d",
+		diffFailStatements,
 		execOkStatements,
-		execFailStatements,
-		diffFailStatements)
+		execFailStatements)
 
 	if diffFailStatements == 0 {
 		log.Printf("Test summary: Test case PASS")
@@ -243,15 +271,17 @@ func diffRunResult(
 }
 
 func buildDefaultConnStr(port int) string {
-	return fmt.Sprintf("root@tcp(localhost:%d)/?allowNativePasswords=true", port)
+	return fmt.Sprintf("root@tcp(localhost:%d)/{db}?allowNativePasswords=true", port)
 }
 
 func main() {
 	connStrNoPush = flag.String("conn-no-push", buildDefaultConnStr(4005), "The connection string to connect to a NoPushDown TiDB instance")
-	connStrPush = flag.String("conn-push", buildDefaultConnStr(4006), "The connection string to connect to a PushDown TiDB instance")
-	connStrPushWithBatch = flag.String("conn-push-with-batch", buildDefaultConnStr(4007), "The connection string to connect to a PushDownWithBatch TiDB instance")
+	connStrPush = flag.String("conn-push", buildDefaultConnStr(4006), "The connection string to connect to a PushDownWithoutVec TiDB instance")
+	connStrPushWithBatch = flag.String("conn-push-with-batch", buildDefaultConnStr(4007), "The connection string to connect to a PushDownWithVec TiDB instance")
 	outputSuccessQueries = flag.Bool("output-success", false, "Output success queries of test cases to a file ends with '.success' along with the original test case")
 	dbName = flag.String("db", "push_down_test_db", "The database name to run test cases")
+	verboseOutput = flag.Bool("verbose", false, "Verbose output")
+
 	flag.Parse()
 
 	prepareDB(*connStrNoPush)
