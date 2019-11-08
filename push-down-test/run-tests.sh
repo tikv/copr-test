@@ -55,6 +55,10 @@ set -u
 
 function run_pds() {
   echo
+  echo "+ PD version"
+  "$pd_bin" --version
+
+  echo
   echo "+ Starting PD"
   "$pd_bin" -config "$push_down_no_batch_config_dir"/pd.toml -log-file "$pd_no_batch_log_file" -L ${log_level} &
   pd_no_batch_pid=$!
@@ -65,6 +69,10 @@ function run_pds() {
 
 function run_tikvs() {
   echo
+  echo "+ TiKV version"
+  "$tikv_bin" --version
+
+  echo
   echo "+ Starting TiKV"
   "$tikv_bin" -C "$push_down_no_batch_config_dir"/tikv.toml --log-file "$tikv_no_batch_log_file" -L ${log_level} &
   tikv_no_batch_pid=$!
@@ -74,6 +82,10 @@ function run_tikvs() {
 }
 
 function run_tidbs() {
+  echo
+  echo "+ TiDB version"
+  "$tidb_bin" -V
+
   echo
   echo "+ Starting TiDB"
   export GO_FAILPOINTS=""
