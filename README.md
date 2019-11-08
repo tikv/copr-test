@@ -66,6 +66,7 @@ cd ../copr-test
 export pd_bin=`realpath ../pd/bin/pd-server`
 export tikv_bin=`realpath ../tikv/target/debug/tikv-server`
 export tidb_src_dir=`realpath ../tidb`
+
 make push-down-test
 ```
 
