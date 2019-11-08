@@ -17,6 +17,7 @@ the newer vectorized model. Requests that cannot be processed by the vectorized 
 to the traditional model. Thus push-down-test also makes sure that the two execution model produce
 same results, by comparing the following three combinations:
 
+
 - TiDB
 - TiDB + TiKV (Non-Vectorized)
 - TiDB + TiKV (Vectorized)
