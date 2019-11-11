@@ -92,11 +92,11 @@ function run_tidbs() {
   "$tidb_bin" -log-file "$no_push_down_tidb_log_file" -config "$no_push_down_config_dir"/tidb.toml -L ${log_level} &
   tidb_no_push_down_pid=$!
 
-  export GO_FAILPOINTS="github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\")"
+  export GO_FAILPOINTS="github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/expression/PanicIfPbCodeUnspecified=return(true)"
   "$tidb_bin" -log-file "$push_down_no_batch_tidb_log_file" -config "$push_down_no_batch_config_dir"/tidb.toml -L ${log_level} &
   tidb_push_down_no_batch_pid=$!
 
-  export GO_FAILPOINTS="github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\")"
+  export GO_FAILPOINTS="github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/expression/PanicIfPbCodeUnspecified=return(true)"
   "$tidb_bin" -log-file "$push_down_with_batch_tidb_log_file" -config "$push_down_with_batch_config_dir"/tidb.toml -L ${log_level} &
   tidb_push_down_with_batch_pid=$!
 }

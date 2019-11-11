@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/pingcap/parser"
@@ -19,6 +20,7 @@ import (
 )
 
 const testCaseDir = "./sql"
+const testPrepDir = "./prepare"
 
 var connStrNoPush *string
 var connStrPush *string
@@ -64,28 +66,60 @@ func prepareDB(connString string) {
 	mustDBClose(db)
 }
 
-func iterateTestCases() {
+func iterateTestCases(dir string, parallel bool) {
 	successCases := 0
 	failedCases := 0
 
-	err := filepath.Walk(testCaseDir, func(path string, info os.FileInfo, err error) error {
+	var files []string
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
 		}
 		if !strings.HasSuffix(info.Name(), ".sql") {
 			return nil
 		}
-		log.Printf("Testing [%s]...", path)
-		if runTestCase(path) {
-			successCases++
-		} else {
-			failedCases++
-		}
+		files = append(files, path)
 		return nil
 	})
 	if err != nil {
 		log.Panicf("Failed to read test case directory [%s]: %v\n", testCaseDir, err)
 	}
+
+	if !parallel {
+		for _, path := range files {
+			log.Printf("Serial Testing [%s]...", path)
+			if runTestCase(path) {
+				successCases++
+			} else {
+				failedCases++
+			}
+		}
+	} else {
+		wg := &sync.WaitGroup{}
+		ch := make(chan bool, len(files))
+		for _, path := range files {
+			wg.Add(1)
+			go func(path string) {
+				defer wg.Done()
+				log.Printf("Parallel Testing [%s]...", path)
+				if runTestCase(path) {
+					ch <- true
+				} else {
+					ch <- false
+				}
+			}(path)
+		}
+		wg.Wait()
+		close(ch)
+		for succ := range ch {
+			if succ {
+				successCases++
+			} else {
+				failedCases++
+			}
+		}
+	}
+
 	log.Printf("All test finished: pass cases: %d, fail cases: %d", successCases, failedCases)
 	if failedCases > 0 {
 		os.Exit(2) // Diff fail results in exit code 2 to distinguish with panic
@@ -157,7 +191,10 @@ func diffRunResult(
 	execOkStatements := 0
 	execFailStatements := 0
 	diffFailStatements := 0
+
 	successQueries := new(bytes.Buffer)
+	output := new(bytes.Buffer)
+	logger := log.New(output, "", log.LstdFlags)
 
 	for {
 		noPushDownLog, ok1 := <-noPushDownLogChan
@@ -169,22 +206,22 @@ func diffRunResult(
 			break
 		}
 		if !ok1 {
-			log.Panicf("Internal error: NoPushDown channel drained\n")
+			logger.Panicf("Internal error: NoPushDown channel drained\n")
 		}
 		if !ok2 {
-			log.Panicf("Internal error: PushDownWithoutVec channel drained\n")
+			logger.Panicf("Internal error: PushDownWithoutVec channel drained\n")
 		}
 		if !ok3 {
-			log.Panicf("Internal error: PushDownWithVec channel drained\n")
+			logger.Panicf("Internal error: PushDownWithVec channel drained\n")
 		}
 		if noPushDownLog.stmt != pushDownLog.stmt ||
 			pushDownLog.stmt != pushDownWithBatchLog.stmt {
-			log.Panicln("Internal error: Pre-check failed, stmt should be identical",
+			logger.Panicln("Internal error: Pre-check failed, stmt should be identical",
 				noPushDownLog.stmt, pushDownLog.stmt, pushDownWithBatchLog.stmt)
 		}
 		if noPushDownLog.stmtIndex != pushDownLog.stmtIndex ||
 			pushDownLog.stmtIndex != pushDownWithBatchLog.stmtIndex {
-			log.Panicln("Internal error: Pre-check failed, stmtIndex should be identical",
+			logger.Panicln("Internal error: Pre-check failed, stmtIndex should be identical",
 				noPushDownLog.stmtIndex, pushDownLog.stmtIndex, pushDownWithBatchLog.stmtIndex)
 		}
 
@@ -212,7 +249,7 @@ func diffRunResult(
 
 		if diffFail {
 			diffFailStatements++
-			log.Printf("Test fail: Outputs are not matching.\n"+
+			logger.Printf("Test fail: Outputs are not matching.\n"+
 				"Test case: %s\n"+
 				"Statement: #%d - %s\n"+
 				"NoPushDown Output: \n%s\n"+
@@ -226,7 +263,7 @@ func diffRunResult(
 				string(pushDownWithBatchLog.output.Bytes()))
 		} else if hasError {
 			if *verboseOutput {
-				log.Printf("Warn: Execute fail, diff skipped.\n"+
+				logger.Printf("Warn: Execute fail, diff skipped.\n"+
 					"Test case: %s\n"+
 					"Statement: #%d - %s\n"+
 					"NoPushDown Output: \n%s\n"+
@@ -242,7 +279,7 @@ func diffRunResult(
 		} else {
 			if *verboseOutput {
 				// Output is same and there is no errors
-				log.Printf("Info: SQL result is idential: \n%s\n", noPushDownLog.stmt)
+				logger.Printf("Info: SQL result is idential: \n%s\n", noPushDownLog.stmt)
 			}
 
 			successQueries.WriteString(noPushDownLog.stmt)
@@ -250,20 +287,23 @@ func diffRunResult(
 		}
 	}
 
-	log.Printf("Test summary: non-matching queries: %d, success queries: %d, skipped queries: %d",
+	logger.Printf("Test summary: non-matching queries: %d, success queries: %d, skipped queries: %d",
 		diffFailStatements,
 		execOkStatements,
 		execFailStatements)
 
 	if diffFailStatements == 0 {
-		log.Printf("Test summary: Test case PASS")
+		logger.Printf("Test summary(%s): Test case PASS", testCasePath)
 	} else {
-		log.Printf("Test summary: Test case FAIL")
+		logger.Printf("Test summary(%s): Test case FAIL", testCasePath)
 	}
+
+	// combine all output
+	log.Println(output.String())
 
 	if *outputSuccessQueries {
 		outputFilePath := testCasePath + ".success"
-		log.Printf("Output success queries to [%s]", outputFilePath)
+		logger.Printf("Output success queries to [%s]", outputFilePath)
 		expectNoErr(ioutil.WriteFile(outputFilePath, successQueries.Bytes(), 0644))
 	}
 
@@ -288,6 +328,8 @@ func main() {
 	prepareDB(*connStrPush)
 	prepareDB(*connStrPushWithBatch)
 
+	iterateTestCases(testPrepDir, false)
+
 	log.Printf("Prepare finished, start testing...")
-	iterateTestCases()
+	iterateTestCases(testCaseDir, true)
 }
