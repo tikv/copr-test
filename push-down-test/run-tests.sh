@@ -20,6 +20,8 @@ tidb_src_dir=$tidb_src_dir
 tidb_bin=""
 pd_bin=$pd_bin
 tikv_bin=$tikv_bin
+include=$include
+exclude=$exclude
 # the hash of tidb_master_bin and pd_master_bin
 #tidb_master_sha=$tidb_master_sha
 #pd_master_sha=$pd_master_sha
@@ -254,7 +256,9 @@ echo "+ Start test"
 ./$push_down_test_bin \
   -conn-no-push "${tidb_user}@tcp(${tidb_host}:${no_push_down_tidb_port})/{db}?allowNativePasswords=true" \
   -conn-push "${tidb_user}@tcp(${tidb_host}:${push_down_tidb_port})/{db}?allowNativePasswords=true" \
-  -conn-push-with-batch "${tidb_user}@tcp(${tidb_host}:${push_down_with_batch_tidb_port})/{db}?allowNativePasswords=true"
+  -conn-push-with-batch "${tidb_user}@tcp(${tidb_host}:${push_down_with_batch_tidb_port})/{db}?allowNativePasswords=true" \
+  -include "${include}" \
+  -exclude "${exclude}"
 readonly exit_code=$?
 
 echo "+ Test finished"

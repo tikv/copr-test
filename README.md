@@ -69,6 +69,13 @@ export tidb_src_dir=`realpath ../tidb`
 make push-down-test
 ```
 
+If you want to filter some test cases:
+
+```
+include=1_arith_1.sql make push-down-test
+exclude=1_arith_1.sql make push-down-test
+```
+
 [failpoint]: https://github.com/pingcap/failpoint
 [randgen]: https://github.com/MariaDB/randgen
 [TiDB]: https://github.com/pingcap/community/blob/master/CONTRIBUTING.md#building-tidb-on-a-local-osshell-environment

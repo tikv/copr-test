@@ -79,6 +79,9 @@ func iterateTestCases(dir string, parallel bool) {
 		if !strings.HasSuffix(info.Name(), ".sql") {
 			return nil
 		}
+		if fileFilter != nil && !fileFilter(path) {
+			return nil
+		}
 		files = append(files, path)
 		return nil
 	})
@@ -340,6 +343,9 @@ func main() {
 	includeList := strings.Split(*includeFiles, ",")
 	excludeList := strings.Split(*excludeFiles, ",")
 	fileFilter = func(file string) bool {
+		if len(includeList) == 0 && len(excludeList) == 0 {
+			return true
+		}
 		base := filepath.Base(file)
 		for _, ex := range excludeList {
 			if ex == base {
