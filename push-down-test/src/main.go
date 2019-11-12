@@ -131,14 +131,14 @@ func iterateTestCases(dir string, parallel bool) {
 }
 
 func runTestCase(testCasePath string) bool {
-	log.Printf("Parsing...")
+	log.Printf("Parsing...[%s]", testCasePath)
 	stmtAsts := readAndParseSQLText(testCasePath)
 	statements := make([]string, 0, len(stmtAsts))
 	for _, stmt := range stmtAsts {
 		statements = append(statements, stmt.Text())
 	}
 
-	log.Printf("Running...")
+	log.Printf("Running...[%s]", testCasePath)
 	noPushDownLogChan := make(chan *statementLog)
 	pushDownLogChan := make(chan *statementLog)
 	pushDownWithBatchLogChan := make(chan *statementLog)
@@ -340,8 +340,13 @@ func main() {
 	log.Printf("Prepare finished, start testing...")
 
 	// Build the filter
-	includeList := strings.Split(*includeFiles, ",")
-	excludeList := strings.Split(*excludeFiles, ",")
+	var includeList, excludeList []string
+	if len(*includeFiles) > 0 {
+		includeList = strings.Split(*includeFiles, ",")
+	}
+	if len(*excludeFiles) > 0 {
+		excludeList = strings.Split(*excludeFiles, ",")
+	}
 	fileFilter = func(file string) bool {
 		if len(includeList) == 0 && len(excludeList) == 0 {
 			return true
