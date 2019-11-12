@@ -21,6 +21,10 @@ abs
 ceil
 ceiling
 floor
+sin
+cos
+tan
+cot
 case
 if
 ifnull
