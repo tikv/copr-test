@@ -28,6 +28,7 @@ var connStrPushWithBatch *string
 var outputSuccessQueries *bool
 var dbName *string
 var verboseOutput *bool
+var fileFilter func(file string) bool
 
 type statementLog struct {
 	output    *bytes.Buffer
@@ -321,6 +322,8 @@ func main() {
 	outputSuccessQueries = flag.Bool("output-success", false, "Output success queries of test cases to a file ends with '.success' along with the original test case")
 	dbName = flag.String("db", "push_down_test_db", "The database name to run test cases")
 	verboseOutput = flag.Bool("verbose", false, "Verbose output")
+	includeFiles := flag.String("include", "", "Test cases included in this test (file lists separated by comma)")
+	excludeFiles := flag.String("exclude", "", "Test cases excluded in this test (file lists separated by comma)")
 
 	flag.Parse()
 
@@ -328,8 +331,27 @@ func main() {
 	prepareDB(*connStrPush)
 	prepareDB(*connStrPushWithBatch)
 
+	// Prepare SQL does not apply the filter
 	iterateTestCases(testPrepDir, false)
 
 	log.Printf("Prepare finished, start testing...")
+
+	// Build the filter
+	includeList := strings.Split(*includeFiles, ",")
+	excludeList := strings.Split(*excludeFiles, ",")
+	fileFilter = func(file string) bool {
+		base := filepath.Base(file)
+		for _, ex := range excludeList {
+			if ex == base {
+				return false
+			}
+		}
+		for _, in := range includeList {
+			if in == base {
+				return true
+			}
+		}
+		return false
+	}
 	iterateTestCases(testCaseDir, true)
 }
