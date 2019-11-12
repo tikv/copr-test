@@ -1,4 +1,5 @@
 and
+bitxor
 or
 not
 lt
