@@ -21,6 +21,7 @@ abs
 ceil
 ceiling
 floor
+round
 case
 if
 ifnull
