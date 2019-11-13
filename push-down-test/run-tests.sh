@@ -135,35 +135,6 @@ function build_tester() {
   go build -o "$push_down_test_bin" ./src
 }
 
-function cat_log() {
-  echo "no push down tidb log (this tidb use mocktikv, so has no pd and tikv log)"
-  cat "$no_push_down_tidb_log_file"
-  echo
-  echo
-
-  echo "push down no batch tidb log"
-  cat "$push_down_no_batch_tidb_log_file"
-  echo
-  echo "push down no batch tikv log"
-  cat "$tikv_no_batch_log_file"
-  echo
-  echo "push down no batch pd log"
-  cat "$pd_no_batch_log_file"
-  echo
-  echo
-
-  echo "push down with batch tidb log"
-  cat "$push_down_with_batch_tidb_log_file"
-  echo
-  echo "push down with batch tikv log"
-  cat "$tikv_with_batch_log_file"
-  echo
-  echo "push down with batch pd log"
-  cat "$pd_with_batch_log_file"
-  echo
-  echo
-}
-
 function kill_all_proc() {
   echo
   echo "+ Killing existing tidb / tikv / pd process"
@@ -263,9 +234,6 @@ readonly exit_code=$?
 
 echo "+ Test finished"
 echo "  - ${push_down_test_bin} exit code is ${exit_code}"
-if [[ $exit_code -ne 2 && $exit_code -ne 0 ]]; then
-  cat_log
-fi
 
 kill_all_proc
 exit $exit_code
