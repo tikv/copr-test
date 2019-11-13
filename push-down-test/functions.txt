@@ -27,6 +27,7 @@ ifnull
 coalesce
 sign
 sqrt
+pi
 json_type
 json_extract
 json_unquote
