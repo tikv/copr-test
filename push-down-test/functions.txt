@@ -24,6 +24,10 @@ abs
 ceil
 ceiling
 floor
+asin
+acos
+atan
+atan2
 case
 if
 ifnull
