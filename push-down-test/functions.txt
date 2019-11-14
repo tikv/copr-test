@@ -21,6 +21,7 @@ abs
 ceil
 ceiling
 floor
+exp
 case
 if
 ifnull
