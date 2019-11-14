@@ -15,6 +15,7 @@ isnull
 like
 istrue
 isfalse
+rightshift
 plus
 minus
 mul
