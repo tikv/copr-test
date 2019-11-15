@@ -1,4 +1,7 @@
 and
+bitand
+bitneg
+bitor
 or
 not
 lt
@@ -29,6 +32,12 @@ case
 if
 ifnull
 coalesce
+sign
+sqrt
+ln
+log
+log2
+log10
 json_type
 json_extract
 json_unquote
