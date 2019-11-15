@@ -24,7 +24,6 @@ DROP TABLE IF EXISTS `table0_int_autoinc`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `table0_int_autoinc` (
   `col_set_key` set('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z') COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `col_varchar_64` varchar(64) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `col_decimal_key` decimal(10,0) DEFAULT NULL,
   `col_int_key` int(11) DEFAULT NULL,
   `col_smallint_unsigned` smallint(5) unsigned DEFAULT NULL,
