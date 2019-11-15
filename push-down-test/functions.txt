@@ -25,6 +25,7 @@ ceil
 ceiling
 floor
 exp
+degrees
 case
 if
 ifnull
