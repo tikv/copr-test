@@ -1,9 +1,10 @@
 and
+or
+not
+xor
 bitand
 bitneg
 bitor
-or
-not
 lt
 le
 eq
