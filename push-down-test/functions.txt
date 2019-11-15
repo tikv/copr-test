@@ -1,5 +1,6 @@
 and
 bitand
+bitneg
 bitor
 or
 not
@@ -15,7 +16,6 @@ isnull
 like
 istrue
 isfalse
-leftshift
 plus
 minus
 mul
