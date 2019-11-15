@@ -24,6 +24,10 @@ abs
 ceil
 ceiling
 floor
+sin
+cos
+tan
+cot
 exp
 degrees
 case
