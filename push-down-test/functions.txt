@@ -1,9 +1,10 @@
 and
+or
+not
+xor
 bitand
 bitneg
 bitor
-or
-not
 lt
 le
 eq
@@ -24,6 +25,10 @@ abs
 ceil
 ceiling
 floor
+sin
+cos
+tan
+cot
 exp
 case
 if
