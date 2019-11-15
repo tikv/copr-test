@@ -213,6 +213,7 @@ wait_for_tidb
 
 echo
 echo "+ Test Configurations"
+echo "  - push_down_func_list=${push_down_func_list}"
 echo "  - tidb_no_push_down_pid=${tidb_no_push_down_pid}"
 echo "  - tikv_no_batch_pid=${tikv_no_batch_pid}"
 echo "  - pd_no_batch_pid=${pd_no_batch_pid}"
