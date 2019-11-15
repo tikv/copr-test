@@ -25,6 +25,7 @@ ceil
 ceiling
 floor
 exp
+radians
 case
 if
 ifnull
