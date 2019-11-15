@@ -47,3 +47,4 @@ json_replace
 json_remove
 json_length
 length
+weekday
