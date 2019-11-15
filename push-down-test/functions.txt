@@ -25,6 +25,7 @@ abs
 ceil
 ceiling
 floor
+exp
 case
 if
 ifnull
@@ -46,3 +47,4 @@ json_insert
 json_replace
 json_remove
 json_length
+length
