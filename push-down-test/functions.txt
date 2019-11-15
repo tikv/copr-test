@@ -28,6 +28,7 @@ sin
 cos
 tan
 cot
+exp
 case
 if
 ifnull
@@ -49,3 +50,4 @@ json_insert
 json_replace
 json_remove
 json_length
+length
