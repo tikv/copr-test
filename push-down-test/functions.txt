@@ -52,3 +52,4 @@ json_replace
 json_remove
 json_length
 length
+hex_str_arg
