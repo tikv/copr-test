@@ -51,4 +51,5 @@ json_insert
 json_replace
 json_remove
 json_length
+bin
 length
