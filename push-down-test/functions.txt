@@ -35,6 +35,7 @@ ln
 log
 log2
 log10
+pow
 json_type
 json_extract
 json_unquote
