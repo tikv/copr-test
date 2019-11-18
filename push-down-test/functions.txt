@@ -5,6 +5,7 @@ xor
 bitand
 bitneg
 bitor
+bitxor
 lt
 le
 eq
