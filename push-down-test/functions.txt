@@ -1,9 +1,11 @@
 and
+or
+not
+xor
 bitand
 bitneg
 bitor
-or
-not
+bitxor
 lt
 le
 eq
@@ -24,6 +26,11 @@ abs
 ceil
 ceiling
 floor
+sin
+cos
+tan
+cot
+exp
 case
 if
 ifnull
@@ -34,6 +41,8 @@ ln
 log
 log2
 log10
+bit_length
+length
 json_type
 json_extract
 json_unquote
@@ -45,4 +54,3 @@ json_insert
 json_replace
 json_remove
 json_length
-bit_length
