@@ -34,6 +34,7 @@ sin
 cos
 tan
 cot
+radians
 exp
 sign
 sqrt
