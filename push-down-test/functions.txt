@@ -61,3 +61,4 @@ json_replace
 json_remove
 json_length
 concat
+locate_binary_3_args
