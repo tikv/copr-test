@@ -49,6 +49,7 @@ ifnull
 coalesce
 bit_length
 length
+sha1
 json_type
 json_extract
 json_unquote
