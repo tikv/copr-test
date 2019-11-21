@@ -16,6 +16,7 @@ nulleq
 in
 isnull
 like
+regexp
 istrue
 isfalse
 plus
