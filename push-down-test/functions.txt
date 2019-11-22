@@ -18,6 +18,8 @@ isnull
 like
 istrue
 isfalse
+leftshift
+rightshift
 plus
 minus
 mul
