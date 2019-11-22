@@ -69,4 +69,5 @@ locate
 ltrim
 rtrim
 reverse
+right
 left
