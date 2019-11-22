@@ -18,6 +18,8 @@ isnull
 like
 istrue
 isfalse
+leftshift
+rightshift
 plus
 minus
 mul
@@ -34,6 +36,7 @@ sin
 cos
 tan
 cot
+crc32
 radians
 degrees
 exp
@@ -61,4 +64,12 @@ json_insert
 json_replace
 json_remove
 json_length
+bit_length
+length
+ascii
 concat
+locate
+ltrim
+rtrim
+reverse
+left
