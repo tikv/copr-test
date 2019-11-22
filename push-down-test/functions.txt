@@ -62,4 +62,5 @@ json_insert
 json_replace
 json_remove
 json_length
+ascii
 concat
