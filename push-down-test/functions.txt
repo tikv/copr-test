@@ -64,4 +64,5 @@ json_remove
 json_length
 ascii
 concat
+rtrim
 reverse
