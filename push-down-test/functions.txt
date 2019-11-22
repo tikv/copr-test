@@ -43,6 +43,7 @@ ln
 log
 log2
 log10
+to_days
 case
 if
 ifnull
