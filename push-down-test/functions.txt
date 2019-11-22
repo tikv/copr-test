@@ -65,6 +65,7 @@ bit_length
 length
 ascii
 concat
+locate
 ltrim
 rtrim
 reverse
