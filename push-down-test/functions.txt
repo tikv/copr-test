@@ -18,6 +18,8 @@ isnull
 like
 istrue
 isfalse
+leftshift
+rightshift
 plus
 minus
 mul
@@ -60,5 +62,6 @@ json_insert
 json_replace
 json_remove
 json_length
+ascii
 concat
 reverse
