@@ -36,6 +36,7 @@ sin
 cos
 tan
 cot
+crc32
 radians
 degrees
 exp
