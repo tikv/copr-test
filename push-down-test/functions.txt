@@ -18,6 +18,8 @@ isnull
 like
 istrue
 isfalse
+leftshift
+rightshift
 plus
 minus
 mul
@@ -48,8 +50,6 @@ case
 if
 ifnull
 coalesce
-bit_length
-length
 json_type
 json_extract
 json_unquote
@@ -61,4 +61,10 @@ json_insert
 json_replace
 json_remove
 json_length
+bit_length
+length
+ascii
 concat
+ltrim
+rtrim
+reverse
