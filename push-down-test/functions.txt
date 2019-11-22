@@ -70,3 +70,5 @@ ltrim
 rtrim
 reverse
 left
+is_ipv4
+is_ipv6
