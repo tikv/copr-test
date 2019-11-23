@@ -70,3 +70,7 @@ ltrim
 rtrim
 reverse
 left
+hour
+minute
+second
+microsecond
