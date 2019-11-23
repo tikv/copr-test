@@ -70,3 +70,4 @@ ltrim
 rtrim
 reverse
 left
+is_ipv4_mapped
