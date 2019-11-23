@@ -18,6 +18,8 @@ isnull
 like
 istrue
 isfalse
+leftshift
+rightshift
 plus
 minus
 mul
@@ -34,6 +36,7 @@ sin
 cos
 tan
 cot
+crc32
 radians
 degrees
 exp
@@ -47,8 +50,6 @@ case
 if
 ifnull
 coalesce
-bit_length
-length
 json_type
 json_extract
 json_unquote
@@ -60,5 +61,14 @@ json_insert
 json_replace
 json_remove
 json_length
+bit_length
+length
+ascii
 concat
+locate
+ltrim
+rtrim
+reverse
+left
 uncompress
+
