@@ -50,8 +50,6 @@ case
 if
 ifnull
 coalesce
-bit_length
-length
 sha1
 json_type
 json_extract
