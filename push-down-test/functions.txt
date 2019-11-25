@@ -36,6 +36,7 @@ sin
 cos
 tan
 cot
+crc32
 radians
 degrees
 exp
@@ -65,3 +66,8 @@ length
 hex
 ascii
 concat
+locate
+ltrim
+rtrim
+reverse
+left
