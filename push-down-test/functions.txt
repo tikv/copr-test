@@ -63,6 +63,7 @@ json_remove
 json_length
 bit_length
 length
+conv
 ascii
 concat
 locate
