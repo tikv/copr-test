@@ -71,3 +71,5 @@ ltrim
 rtrim
 reverse
 left
+md5
+sha1
