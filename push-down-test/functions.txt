@@ -71,3 +71,4 @@ ltrim
 rtrim
 reverse
 left
+instr
