@@ -72,3 +72,4 @@ rtrim
 reverse
 left
 rand
+rand_with_seed
