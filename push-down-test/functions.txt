@@ -71,3 +71,5 @@ ltrim
 rtrim
 reverse
 left
+greatest
+least
