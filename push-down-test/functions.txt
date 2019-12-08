@@ -80,6 +80,7 @@ space
 reverse
 right
 left
+year
 hour
 minute
 second
