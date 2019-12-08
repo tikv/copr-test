@@ -6,6 +6,7 @@ bitand
 bitneg
 bitor
 bitxor
+unaryminus
 lt
 le
 eq
