@@ -75,6 +75,7 @@ locate
 ltrim
 rtrim
 reverse
+right
 left
 dayofyear
 from_days
