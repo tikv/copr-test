@@ -98,6 +98,7 @@ from_days
 to_days
 is_ipv4
 is_ipv4_compat
+is_ipv4_mapped
 is_ipv6
 inet_aton
 inet_ntoa
