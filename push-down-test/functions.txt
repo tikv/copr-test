@@ -71,6 +71,7 @@ ascii
 quote
 concat
 concat_ws
+replace
 strcmp
 locate
 instr
