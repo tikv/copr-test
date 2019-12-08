@@ -72,4 +72,5 @@ ltrim
 rtrim
 reverse
 left
+is_ipv4_compat
 inet_ntoa
