@@ -63,6 +63,8 @@ json_remove
 json_length
 bit_length
 length
+hex
+conv
 ascii
 concat
 locate
@@ -71,4 +73,6 @@ rtrim
 reverse
 left
 is_ipv4
+is_ipv4_compat
 is_ipv6
+inet_ntoa
