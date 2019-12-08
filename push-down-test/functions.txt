@@ -69,6 +69,7 @@ conv
 ascii
 concat
 concat_ws
+strcmp
 locate
 ltrim
 rtrim
