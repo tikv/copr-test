@@ -46,7 +46,7 @@ ln
 log
 log2
 log10
-to_days
+pow
 case
 if
 ifnull
@@ -68,10 +68,15 @@ hex
 conv
 ascii
 concat
+concat_ws
+strcmp
 locate
 ltrim
 rtrim
 reverse
 left
+dayofyear
+from_days
+to_days
 is_ipv4_compat
 inet_ntoa
