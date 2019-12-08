@@ -75,6 +75,7 @@ strcmp
 locate
 ltrim
 rtrim
+space
 reverse
 right
 left
