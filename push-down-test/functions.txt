@@ -85,6 +85,8 @@ hour
 minute
 second
 microsecond
+period_add
+period_diff
 dayofyear
 from_days
 to_days
