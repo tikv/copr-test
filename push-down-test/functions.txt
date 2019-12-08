@@ -46,6 +46,7 @@ ln
 log
 log2
 log10
+pow
 case
 if
 ifnull
