@@ -73,6 +73,7 @@ concat
 concat_ws
 strcmp
 locate
+instr
 ltrim
 rtrim
 space
