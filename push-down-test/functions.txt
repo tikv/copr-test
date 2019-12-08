@@ -68,6 +68,7 @@ hex
 conv
 ascii
 concat
+concat_ws
 locate
 ltrim
 rtrim
