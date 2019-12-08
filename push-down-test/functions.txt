@@ -63,6 +63,7 @@ json_remove
 json_length
 bit_length
 length
+hex
 conv
 ascii
 concat
@@ -72,3 +73,4 @@ ltrim
 rtrim
 reverse
 left
+inet_ntoa
