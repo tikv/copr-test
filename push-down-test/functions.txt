@@ -99,5 +99,6 @@ inet_aton
 inet_ntoa
 inet6_aton
 inet6_ntoa
+uncompressed_length
 md5
 sha1
