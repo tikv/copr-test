@@ -73,6 +73,7 @@ ltrim
 rtrim
 reverse
 left
+dayofyear
 from_days
 is_ipv4_compat
 inet_ntoa
