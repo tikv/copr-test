@@ -71,6 +71,4 @@ ltrim
 rtrim
 reverse
 left
-round_real
-round_int
-round_dec
+round
