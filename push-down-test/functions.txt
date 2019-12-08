@@ -80,6 +80,7 @@ space
 reverse
 right
 left
+elt
 year
 hour
 minute
@@ -87,6 +88,7 @@ second
 microsecond
 period_add
 period_diff
+dayname
 dayofmonth
 dayofyear
 from_days
@@ -96,4 +98,7 @@ is_ipv4_compat
 is_ipv6
 inet_aton
 inet_ntoa
+inet6_aton
 inet6_ntoa
+md5
+sha1
