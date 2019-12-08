@@ -77,5 +77,6 @@ reverse
 left
 dayofyear
 from_days
+to_days
 is_ipv4_compat
 inet_ntoa
