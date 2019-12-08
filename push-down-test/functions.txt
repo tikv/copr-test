@@ -79,5 +79,7 @@ left
 dayofyear
 from_days
 to_days
+is_ipv4
 is_ipv4_compat
+is_ipv6
 inet_ntoa
