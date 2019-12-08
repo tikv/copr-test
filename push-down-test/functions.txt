@@ -52,6 +52,7 @@ case
 if
 ifnull
 coalesce
+sha1
 json_type
 json_extract
 json_unquote
