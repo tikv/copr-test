@@ -64,6 +64,7 @@ json_length
 bit_length
 length
 hex
+conv
 ascii
 concat
 locate
