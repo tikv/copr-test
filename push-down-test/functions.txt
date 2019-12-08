@@ -77,6 +77,10 @@ rtrim
 reverse
 right
 left
+hour
+minute
+second
+microsecond
 dayofyear
 from_days
 to_days
