@@ -6,6 +6,7 @@ bitand
 bitneg
 bitor
 bitxor
+unaryminus
 lt
 le
 eq
@@ -46,6 +47,7 @@ ln
 log
 log2
 log10
+pow
 case
 if
 ifnull
@@ -63,11 +65,20 @@ json_remove
 json_length
 bit_length
 length
+hex
+conv
 ascii
 concat
+concat_ws
+strcmp
 locate
 ltrim
 rtrim
 reverse
 left
 dayname
+dayofyear
+from_days
+to_days
+is_ipv4_compat
+inet_ntoa
