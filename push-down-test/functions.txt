@@ -99,3 +99,5 @@ inet_aton
 inet_ntoa
 inet6_aton
 inet6_ntoa
+md5
+sha1
