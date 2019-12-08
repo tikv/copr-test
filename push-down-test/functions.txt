@@ -46,6 +46,7 @@ ln
 log
 log2
 log10
+pow
 case
 if
 ifnull
@@ -63,6 +64,8 @@ json_remove
 json_length
 bit_length
 length
+hex
+conv
 ascii
 concat
 locate
@@ -70,4 +73,8 @@ ltrim
 rtrim
 reverse
 left
+dayofyear
+from_days
+is_ipv4_compat
+inet_ntoa
 inet6_ntoa
