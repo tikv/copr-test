@@ -68,6 +68,7 @@ length
 hex
 conv
 ascii
+quote
 concat
 concat_ws
 strcmp
