@@ -77,6 +77,10 @@ rtrim
 reverse
 right
 left
+hour
+minute
+second
+microsecond
 dayofyear
 from_days
 to_days
@@ -86,3 +90,4 @@ is_ipv6
 inet_aton
 inet_ntoa
 inet6_aton
+inet6_ntoa
