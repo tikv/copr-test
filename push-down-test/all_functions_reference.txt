@@ -69,7 +69,9 @@ pow
 power
 radians
 rand
-round
+round_real
+round_int
+round_dec
 sign
 sin
 sqrt
