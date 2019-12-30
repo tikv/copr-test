@@ -105,7 +105,7 @@ function run_tikv() {
   echo "+ Launching TiKV for $5 test"
   $1 -C $2 --log-file $3 -L $4 &
 
-  # Return the PID of the new PD process
+  # Return the PID of the new TiKV process
   tikv_processes+=("$!")
 }
 
@@ -125,7 +125,7 @@ function run_tidb() {
   export GO_FAILPOINTS="$5"
   $1 -config $2 -log-file $3 -L $4 &
 
-  # Return the PID of the new PD process
+  # Return the PID of the new TiDB process
   tidb_processes+=("$!")
 }
 
@@ -157,7 +157,7 @@ function build_tidb() {
 
 function build_tester() {
   echo
-  echo "+Building Push Down Tester"
+  echo "+ Building Push Down Tester"
   go build -o "$push_down_test_bin" ./src
 }
 
@@ -295,7 +295,6 @@ function start_full_test() {
 
   clean_all_proc
   exit $exit_code
-
 }
 
 function start_push_down_without_vec_test() {
