@@ -5,6 +5,8 @@ executes TiDB push-down executors to improve performance.
 
 ## Push Down Test
 
+`./push-down-test`
+
 Currently we only have push-down-test to test the Coprocessor module. Push-down-test exists to
 make sure that execution results are consistent between TiDB and Coprocessor. It works by
 executeing test cases on  a standalone TiDB (with mocktikv) and on a TiDB cluster (with TiKV
