@@ -3,7 +3,7 @@
 *.swp
 .DS_Store
 
-*.log
+**.log
 
 *.fail.go
 
