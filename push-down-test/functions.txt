@@ -92,6 +92,7 @@ microsecond
 period_add
 period_diff
 dayname
+dayofweek
 dayofmonth
 dayofyear
 from_days
