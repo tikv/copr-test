@@ -14,10 +14,23 @@ exclude=${exclude}
 # All push down function lists
 push_down_func_list=$(cat ./functions.txt | paste -sd "," -)
 
+realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+
 # Build path
 readonly copr_test_build_path="$(realpath ./build)"
 readonly push_down_test_bin="${copr_test_build_path}/push_down_test_bin"
 readonly data_souce="$(realpath ./prepare/0_data.sql)"
+
+echo "+ copr_test_build_path"
+echo "$copr_test_build_path"
+
+echo "+ push_down_test_bin"
+echo "$push_down_test_bin"
+
+echo "+ data_souce"
+echo "$data_souce"
 
 # These log locations should be the same as which in CI script
 # https://internal.pingcap.net/idc-jenkins/job/tikv_ghpr_integration_pushdownfunc_test/configure
