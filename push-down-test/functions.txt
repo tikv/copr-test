@@ -107,3 +107,4 @@ inet6_ntoa
 uncompressed_length
 md5
 sha1
+oct
