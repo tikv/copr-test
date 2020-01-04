@@ -81,6 +81,7 @@ space
 reverse
 right
 left
+ord
 field
 elt
 year
