@@ -35,12 +35,9 @@ echo "$data_souce"
 # These log locations should be the same as which in CI script
 # https://internal.pingcap.net/idc-jenkins/job/tikv_ghpr_integration_pushdownfunc_test/configure
 readonly no_push_down_tidb_log_file="${copr_test_build_path}/tidb_no_push_down.log"
-readonly push_down_no_batch_tidb_log_file="${copr_test_build_path}/tidb_push_down_no_batch.log"
-readonly push_down_with_batch_tidb_log_file="${copr_test_build_path}/tidb_push_down_with_batch.log"
-readonly tikv_no_batch_log_file="${copr_test_build_path}/tikv_no_batch.log"
-readonly tikv_with_batch_log_file="${copr_test_build_path}/tikv_with_batch.log"
-readonly pd_no_batch_log_file="${copr_test_build_path}/pd_no_batch.log"
-readonly pd_with_batch_log_file="${copr_test_build_path}/pd_with_batch.log"
+readonly with_push_down_tidb_log_file="${copr_test_build_path}/tidb_with_push_down.log"
+readonly with_push_down_tikv_log_file="${copr_test_build_path}/tikv_with_push_down.log"
+readonly with_push_down_pd_log_file="${copr_test_build_path}/pd_with_push_down.log"
 
 # Config paths
 config_path="$(realpath ./config)"
@@ -48,8 +45,7 @@ config_path="$(realpath ./config)"
 # Read only variables
 readonly tidb_src_url="https://github.com/pingcap/tidb/archive/master.zip"
 readonly no_push_down_tidb_port="4005"
-readonly push_down_tidb_port="4006"
-readonly push_down_with_batch_tidb_port="4007"
+readonly with_push_down_tidb_port="4007"
 readonly tidb_host="127.0.0.1"
 readonly tidb_user="root"
 readonly tidb_database="test"
@@ -81,16 +77,14 @@ function prepare_config() {
   find ${config_path} -type f -exec sed -i 's@\/tmp\/copr_test@'${copr_test_build_path}'@g' {} \;
 
   no_push_down_config_dir="${config_path}/no_push_down"
-  push_down_no_batch_config_dir="${config_path}/push_down_no_batch"
-  push_down_with_batch_config_dir="${config_path}/push_down_with_batch"
-
+  with_push_down_config_dir="${config_path}/with_push_down"
 }
 
 # $1: PD binary path
 # $2: configuration file
 # $3: log file
 # $4: log level
-# $5: message type: PushDownWithoutVec/PushDownWithVec
+# $5: message type: WithPushDown
 function run_pd() {
   echo
   echo "+ PD version:"
@@ -108,7 +102,7 @@ function run_pd() {
 # $2: configuration file
 # $3: log file
 # $4: log level
-# $5: message type: PushDownWithoutVec/PushDownWithVec
+# $5: message type: WithPushDown
 function run_tikv() {
   echo
   echo "+ TiKV version:"
@@ -127,7 +121,7 @@ function run_tikv() {
 # $3: log file
 # $4: log level
 # $5: value for failpoint environment variable
-# $6: message type: NoPushDown/PushDownWithoutVec/PushDownWithVec
+# $6: message type: NoPushDown/WithPushDown
 function run_tidb() {
   echo
   echo "+ TiDB version:"
@@ -229,7 +223,7 @@ function my_sleep() {
 # $1: tidb user
 # $2: tidb host
 # $3: tidb port
-# $4: message type: NoPushDown/PushDownWithoutVec/PushDownWithVec
+# $4: message type: NoPushDown/WithPushDown
 function wait_for_tidb() {
   echo
   echo "+ Waiting TiDB start up ($4)"
@@ -247,7 +241,7 @@ function wait_for_tidb() {
 }
 
 # $1: TiKV log file
-# $2: message type: PushDownWithoutVec/PushDownWithVec
+# $2: message type: WithPushDown
 function wait_for_tikv() {
   echo
   echo "+ Waiting TiKV start up ($2)"
@@ -268,37 +262,28 @@ function start_full_test() {
   prebuild
 
   # Run all PDs
-  run_pd ${pd_bin} ${push_down_no_batch_config_dir}/pd.toml ${pd_no_batch_log_file} ${log_level} "PushDownWithoutVec"
-  run_pd ${pd_bin} ${push_down_with_batch_config_dir}/pd.toml ${pd_with_batch_log_file} ${log_level} "PushPushDownWithVec"
+  run_pd ${pd_bin} ${with_push_down_config_dir}/pd.toml ${with_push_down_pd_log_file} ${log_level} "PushWithPushDown"
   my_sleep 3 "PD"
 
   # Run all TiKVs
-  run_tikv ${tikv_bin} ${push_down_no_batch_config_dir}/tikv.toml ${tikv_no_batch_log_file} ${log_level} "PushDownWithoutVec"
-  run_tikv ${tikv_bin} ${push_down_with_batch_config_dir}/tikv.toml ${tikv_with_batch_log_file} ${log_level} "PushDownWithVec"
-  wait_for_tikv ${tikv_no_batch_log_file} "PushDownWithoutVec"
-  wait_for_tikv ${tikv_with_batch_log_file} "PushDownWithVec"
+  run_tikv ${tikv_bin} ${with_push_down_config_dir}/tikv.toml ${with_push_down_tikv_log_file} ${log_level} "WithPushDown"
+  wait_for_tikv ${with_push_down_tikv_log_file} "WithPushDown"
 
   # Run all tidbs
   run_tidb ${tidb_bin} ${no_push_down_config_dir}/tidb.toml ${no_push_down_tidb_log_file} ${log_level} "" "NoPushDown"
-  run_tidb ${tidb_bin} ${push_down_no_batch_config_dir}/tidb.toml ${push_down_no_batch_tidb_log_file} ${log_level} \
+  run_tidb ${tidb_bin} ${with_push_down_config_dir}/tidb.toml ${with_push_down_tidb_log_file} ${log_level} \
     "github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/expression/PanicIfPbCodeUnspecified=return(true)" \
-    "PushDownWithoutVec"
-
-  run_tidb ${tidb_bin} ${push_down_with_batch_config_dir}/tidb.toml ${push_down_with_batch_tidb_log_file} ${log_level} \
-    "github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/expression/PanicIfPbCodeUnspecified=return(true)" \
-    "PushDownWithVec"
+    "WithPushDown"
   my_sleep 10 "TiDB"
 
   wait_for_tidb ${tidb_user} ${tidb_host} ${no_push_down_tidb_port} "NoPushDown"
-  wait_for_tidb ${tidb_user} ${tidb_host} ${push_down_tidb_port} "PushDownWithoutVec"
-  wait_for_tidb ${tidb_user} ${tidb_host} ${push_down_with_batch_tidb_port} "PushDownWithVec"
+  wait_for_tidb ${tidb_user} ${tidb_host} ${with_push_down_tidb_port} "WithPushDown"
 
   echo "+ Start test"
 
   $push_down_test_bin \
     -conn-no-push "${tidb_user}@tcp(${tidb_host}:${no_push_down_tidb_port})/{db}?allowNativePasswords=true" \
-    -conn-push "${tidb_user}@tcp(${tidb_host}:${push_down_tidb_port})/{db}?allowNativePasswords=true" \
-    -conn-push-with-batch "${tidb_user}@tcp(${tidb_host}:${push_down_with_batch_tidb_port})/{db}?allowNativePasswords=true" \
+    -conn-push-down "${tidb_user}@tcp(${tidb_host}:${with_push_down_tidb_port})/{db}?allowNativePasswords=true" \
     -include "${include}" \
     -exclude "${exclude}"
   readonly exit_code=$?
@@ -310,40 +295,21 @@ function start_full_test() {
   exit $exit_code
 }
 
-function start_push_down_without_vec_test() {
-  prebuild
-
-  run_pd ${pd_bin} ${push_down_no_batch_config_dir}/pd.toml ${pd_no_batch_log_file} ${log_level} "PushDownWithoutVec"
-  my_sleep 3 "PD"
-
-  run_tikv ${tikv_bin} ${push_down_no_batch_config_dir}/tikv.toml ${tikv_no_batch_log_file} ${log_level} "PushDownWithoutVec"
-  wait_for_tikv ${tikv_no_batch_log_file} "PushDownWithoutVec"
-  run_tidb ${tidb_bin} ${push_down_no_batch_config_dir}/tidb.toml ${push_down_no_batch_tidb_log_file} ${log_level} \
-    "github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/expression/PanicIfPbCodeUnspecified=return(true)" \
-    "PushDownWithoutVec"
-  my_sleep 10 "TiDB"
-  wait_for_tidb ${tidb_user} ${tidb_host} ${push_down_tidb_port} "PushDownWithoutVec"
-  mysql --default-character-set utf8 -u ${tidb_user} -h ${tidb_host} -P ${push_down_tidb_port} -D ${tidb_database} <${data_souce}
-  mysql --default-character-set utf8 -u ${tidb_user} -h ${tidb_host} -P ${push_down_tidb_port} -D ${tidb_database}
-
-  clean_all_proc
-}
-
 function start_push_down_with_vec_test() {
   prebuild
 
-  run_pd ${pd_bin} ${push_down_with_batch_config_dir}/pd.toml ${pd_with_batch_log_file} ${log_level} "PushPushDownWithVec"
+  run_pd ${pd_bin} ${with_push_down_config_dir}/pd.toml ${with_push_down_pd_log_file} ${log_level} "PushWithPushDown"
   my_sleep 3 "PD"
 
-  run_tikv ${tikv_bin} ${push_down_with_batch_config_dir}/tikv.toml ${tikv_with_batch_log_file} ${log_level} "PushDownWithVec"
-  wait_for_tikv ${tikv_with_batch_log_file} "PushDownWithVec"
-  run_tidb ${tidb_bin} ${push_down_with_batch_config_dir}/tidb.toml ${push_down_with_batch_tidb_log_file} ${log_level} \
+  run_tikv ${tikv_bin} ${with_push_down_config_dir}/tikv.toml ${with_push_down_tikv_log_file} ${log_level} "WithPushDown"
+  wait_for_tikv ${with_push_down_tikv_log_file} "WithPushDown"
+  run_tidb ${tidb_bin} ${with_push_down_config_dir}/tidb.toml ${with_push_down_tidb_log_file} ${log_level} \
     "github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/expression/PanicIfPbCodeUnspecified=return(true)" \
-    "PushDownWithVec"
+    "WithPushDown"
   my_sleep 10 "TiDB"
-  wait_for_tidb ${tidb_user} ${tidb_host} ${push_down_with_batch_tidb_port} "PushDownWithVec"
-  mysql --default-character-set utf8 -u ${tidb_user} -h ${tidb_host} -P ${push_down_with_batch_tidb_port} -D ${tidb_database} <${data_souce}
-  mysql --default-character-set utf8 -u ${tidb_user} -h ${tidb_host} -P ${push_down_with_batch_tidb_port} -D ${tidb_database}
+  wait_for_tidb ${tidb_user} ${tidb_host} ${with_push_down_tidb_port} "WithPushDown"
+  mysql --default-character-set utf8 -u ${tidb_user} -h ${tidb_host} -P ${with_push_down_tidb_port} -D ${tidb_database} <${data_souce}
+  mysql --default-character-set utf8 -u ${tidb_user} -h ${tidb_host} -P ${with_push_down_tidb_port} -D ${tidb_database}
 
   clean_all_proc
 }
@@ -364,9 +330,7 @@ if [ "$1" == "full-test" ]; then
   start_full_test
 elif [ "$1" == "no-push-down" ]; then
   start_no_push_down_test
-elif [ "$1" == "push-down-without-vec" ]; then
-  start_push_down_without_vec_test
-elif [ "$1" == "push-down-with-vec" ]; then
+elif [ "$1" == "with-push-down" ]; then
   start_push_down_with_vec_test
 elif [ "$1" == "clean" ]; then
   clean_build

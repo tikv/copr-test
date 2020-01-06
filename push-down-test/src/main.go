@@ -23,7 +23,6 @@ const testCaseDir = "./sql"
 const testPrepDir = "./prepare"
 
 var connStrNoPush *string
-var connStrPush *string
 var connStrPushWithBatch *string
 var outputSuccessQueries *bool
 var dbName *string
@@ -140,12 +139,10 @@ func runTestCase(testCasePath string) bool {
 
 	log.Printf("Running...[%s]", testCasePath)
 	noPushDownLogChan := make(chan *statementLog)
-	pushDownLogChan := make(chan *statementLog)
 	pushDownWithBatchLogChan := make(chan *statementLog)
 	go runStatements(noPushDownLogChan, *connStrNoPush, statements)
-	go runStatements(pushDownLogChan, *connStrPush, statements)
 	go runStatements(pushDownWithBatchLogChan, *connStrPushWithBatch, statements)
-	return diffRunResult(testCasePath, noPushDownLogChan, pushDownLogChan, pushDownWithBatchLogChan)
+	return diffRunResult(testCasePath, noPushDownLogChan, pushDownWithBatchLogChan)
 }
 
 func runStatements(logChan chan *statementLog, connString string, statements []string) {
@@ -189,7 +186,6 @@ func runSingleStatement(stmt string, stmtIndex int, db *sql.DB, logChan chan *st
 func diffRunResult(
 	testCasePath string,
 	noPushDownLogChan chan *statementLog,
-	pushDownLogChan chan *statementLog,
 	pushDownWithBatchLogChan chan *statementLog,
 ) bool {
 	execOkStatements := 0
@@ -202,35 +198,29 @@ func diffRunResult(
 
 	for {
 		noPushDownLog, ok1 := <-noPushDownLogChan
-		pushDownLog, ok2 := <-pushDownLogChan
 		pushDownWithBatchLog, ok3 := <-pushDownWithBatchLogChan
 
-		allEnd := !(ok1 || ok2 || ok3)
+		allEnd := !(ok1 || ok3)
 		if allEnd {
 			break
 		}
 		if !ok1 {
 			logger.Panicf("Internal error: NoPushDown channel drained\n")
 		}
-		if !ok2 {
-			logger.Panicf("Internal error: PushDownWithoutVec channel drained\n")
-		}
 		if !ok3 {
-			logger.Panicf("Internal error: PushDownWithVec channel drained\n")
+			logger.Panicf("Internal error: WithPushDown channel drained\n")
 		}
-		if noPushDownLog.stmt != pushDownLog.stmt ||
-			pushDownLog.stmt != pushDownWithBatchLog.stmt {
+		if noPushDownLog.stmt != pushDownWithBatchLog.stmt {
 			logger.Panicln("Internal error: Pre-check failed, stmt should be identical",
-				noPushDownLog.stmt, pushDownLog.stmt, pushDownWithBatchLog.stmt)
+				noPushDownLog.stmt, pushDownWithBatchLog.stmt)
 		}
-		if noPushDownLog.stmtIndex != pushDownLog.stmtIndex ||
-			pushDownLog.stmtIndex != pushDownWithBatchLog.stmtIndex {
+		if noPushDownLog.stmtIndex != pushDownWithBatchLog.stmtIndex {
 			logger.Panicln("Internal error: Pre-check failed, stmtIndex should be identical",
-				noPushDownLog.stmtIndex, pushDownLog.stmtIndex, pushDownWithBatchLog.stmtIndex)
+				noPushDownLog.stmtIndex, pushDownWithBatchLog.stmtIndex)
 		}
 
 		hasError := false
-		if noPushDownLog.hasError || pushDownLog.hasError || pushDownWithBatchLog.hasError {
+		if noPushDownLog.hasError || pushDownWithBatchLog.hasError {
 			execFailStatements++
 			hasError = true
 		} else {
@@ -240,13 +230,12 @@ func diffRunResult(
 		diffFail := false
 		if hasError {
 			// If there are errors, currently we don't check content and only check existence
-			if !noPushDownLog.hasError || !pushDownLog.hasError || !pushDownWithBatchLog.hasError {
+			if !noPushDownLog.hasError || !pushDownWithBatchLog.hasError {
 				diffFail = true
 			}
 		} else {
 			// If there are no error, check content
-			if !bytes.Equal(noPushDownLog.output.Bytes(), pushDownLog.output.Bytes()) ||
-				!bytes.Equal(pushDownLog.output.Bytes(), pushDownWithBatchLog.output.Bytes()) {
+			if !bytes.Equal(noPushDownLog.output.Bytes(), pushDownWithBatchLog.output.Bytes()) {
 				diffFail = true
 			}
 		}
@@ -257,13 +246,11 @@ func diffRunResult(
 				"Test case: %s\n"+
 				"Statement: #%d - %s\n"+
 				"NoPushDown Output: \n%s\n"+
-				"PushDownWithoutVec Output: \n%s\n"+
-				"PushDownWithVec Output: \n%s\n\n",
+				"WithPushDown Output: \n%s\n\n",
 				testCasePath,
 				noPushDownLog.stmtIndex,
 				noPushDownLog.stmt,
 				string(noPushDownLog.output.Bytes()),
-				string(pushDownLog.output.Bytes()),
 				string(pushDownWithBatchLog.output.Bytes()))
 		} else if hasError {
 			if *verboseOutput {
@@ -271,13 +258,11 @@ func diffRunResult(
 					"Test case: %s\n"+
 					"Statement: #%d - %s\n"+
 					"NoPushDown Output: \n%s\n"+
-					"PushDownWithoutVec Output: \n%s\n"+
-					"PushDownWithVec Output: \n%s\n\n",
+					"WithPushDown Output: \n%s\n\n",
 					testCasePath,
 					noPushDownLog.stmtIndex,
 					noPushDownLog.stmt,
 					string(noPushDownLog.output.Bytes()),
-					string(pushDownLog.output.Bytes()),
 					string(pushDownWithBatchLog.output.Bytes()))
 			}
 		} else {
@@ -320,8 +305,7 @@ func buildDefaultConnStr(port int) string {
 
 func main() {
 	connStrNoPush = flag.String("conn-no-push", buildDefaultConnStr(4005), "The connection string to connect to a NoPushDown TiDB instance")
-	connStrPush = flag.String("conn-push", buildDefaultConnStr(4006), "The connection string to connect to a PushDownWithoutVec TiDB instance")
-	connStrPushWithBatch = flag.String("conn-push-with-batch", buildDefaultConnStr(4007), "The connection string to connect to a PushDownWithVec TiDB instance")
+	connStrPushWithBatch = flag.String("conn-push-down", buildDefaultConnStr(4007), "The connection string to connect to a WithPushDown TiDB instance")
 	outputSuccessQueries = flag.Bool("output-success", false, "Output success queries of test cases to a file ends with '.success' along with the original test case")
 	dbName = flag.String("db", "push_down_test_db", "The database name to run test cases")
 	verboseOutput = flag.Bool("verbose", false, "Verbose output")
@@ -331,7 +315,6 @@ func main() {
 	flag.Parse()
 
 	prepareDB(*connStrNoPush)
-	prepareDB(*connStrPush)
 	prepareDB(*connStrPushWithBatch)
 
 	// Prepare SQL does not apply the filter
