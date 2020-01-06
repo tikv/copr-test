@@ -8,13 +8,9 @@ push-down-test:
 no-push-down:
 	@cd ./push-down-test && bash ./run-tests.sh no-push-down
 
-.PHONY: push-down-without-vec
-push-down-without-vec:
-	@cd ./push-down-test && bash ./run-tests.sh push-down-without-vec
-
 .PHONY: push-down-with-vec
-push-down-with-vec:
-	@cd ./push-down-test && bash ./run-tests.sh push-down-with-vec
+with-push-down:
+	@cd ./push-down-test && bash ./run-tests.sh with-push-down
 
 .PHONY: clean
 clean:
