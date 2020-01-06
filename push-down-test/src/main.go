@@ -290,6 +290,10 @@ func diffRunResult(
 	// combine all output
 	log.Println(output.String())
 
+	if diffFailStatements > 0 {
+		os.Exit(2)
+	}
+
 	if *outputSuccessQueries {
 		outputFilePath := testCasePath + ".success"
 		logger.Printf("Output success queries to [%s]", outputFilePath)
