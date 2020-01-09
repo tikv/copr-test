@@ -79,7 +79,7 @@ ltrim
 rtrim
 space
 reverse
-right
+#right
 #left
 field
 elt
