@@ -66,12 +66,21 @@ cd ../copr-test
 export pd_bin=`realpath ../pd/bin/pd-server`
 export tikv_bin=`realpath ../tikv/target/debug/tikv-server`
 export tidb_src_dir=`realpath ../tidb`
+# Run all tests
 make push-down-test
+
+# You can run other target like `push-down-without-vec`
+# which will start a `mysql` client to run `push-down-without-vec` only.
+# You can reproduce failed SQL more conveniently
+make push-down-without-vec
+
+# If you want to clean the `push-down-test/build` directory and kill all the tidb/pd/tikv processes, run:
+make clean
 ```
 
 If you want to filter some test cases:
 
-```
+```sh
 include=1_arith_1.sql make push-down-test
 exclude=1_arith_1.sql make push-down-test
 ```
