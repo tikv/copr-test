@@ -324,6 +324,7 @@ func main() {
 	// Prepare SQL does not apply the filter
 	iterateTestCases(testPrepDir, false)
 
+	log.SetOutput(os.Stdout)
 	log.Printf("Prepare finished, start testing...")
 
 	// Build the filter
