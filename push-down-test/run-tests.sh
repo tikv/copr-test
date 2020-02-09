@@ -158,6 +158,7 @@ function build_tidb() {
   # Enable failpoints
   make -C ${tidb_src_dir} failpoint-enable
   make -C ${tidb_src_dir}
+  make -C ${tidb_src_dir} failpoint-disable
 
   tidb_bin=${tidb_src_dir}/bin/tidb-server
 }
