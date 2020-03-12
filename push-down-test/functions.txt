@@ -91,7 +91,7 @@ month
 #microsecond
 period_add
 period_diff
-dayname
+#dayname
 dayofmonth
 dayofyear
 from_days
