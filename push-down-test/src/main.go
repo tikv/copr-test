@@ -98,12 +98,22 @@ func iterateTestCases(dir string, parallel bool) {
 			}
 		}
 	} else {
+		concurrency := 10
+		sem := make(chan bool, concurrency)
+
 		wg := &sync.WaitGroup{}
 		ch := make(chan bool, len(files))
+
 		for _, path := range files {
+			sem <- true
 			wg.Add(1)
+
 			go func(path string) {
-				defer wg.Done()
+				defer func() {
+					wg.Done()
+					<-sem
+				}()
+
 				log.Printf("Parallel Testing [%s]...", path)
 				if runTestCase(path) {
 					ch <- true
