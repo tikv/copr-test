@@ -160,20 +160,29 @@ func runSingleStatement(stmt string, stmtIndex int, db *sql.DB, logChan chan *st
 	rows, err := db.Query(stmt)
 	if err != nil {
 		hasError = true
-		logBuf.WriteString(string(err.Error()))
-		logBuf.WriteString("\n")
+		logBuf.WriteString(err.Error())
 	} else {
 		cols, err := rows.Columns()
 		expectNoErr(err)
 		if len(cols) > 0 {
-			byteRows, err := SqlRowsToByteRows(rows)
+			byteRows, err := SqlRowsToByteRows(rows, cols)
 			expectNoErr(err)
-			WriteQueryResult(byteRows, logBuf)
+
+			sqlErr := rows.Err()
+			if sqlErr != nil {
+				hasError = true
+				logBuf.WriteString(sqlErr.Error())
+			} else {
+				WriteQueryResult(byteRows, logBuf)
+			}
 		}
-		logBuf.WriteString("\n")
-		expectNoErr(rows.Close())
-		expectNoErr(rows.Err())
 	}
+	logBuf.WriteString("\n")
+
+	if !hasError {
+		expectNoErr(rows.Close())
+	}
+
 	logChan <- &statementLog{
 		output:    logBuf,
 		stmt:      stmt,
@@ -350,6 +359,11 @@ func main() {
 				return true
 			}
 		}
+
+		if len(excludeList) != 0 {
+			return true
+		}
+
 		return false
 	}
 	iterateTestCases(testCaseDir, true)
