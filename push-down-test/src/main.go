@@ -165,13 +165,14 @@ func runSingleStatement(stmt string, stmtIndex int, db *sql.DB, logChan chan *st
 		cols, err := rows.Columns()
 		expectNoErr(err)
 		if len(cols) > 0 {
-			byteRows, sqlErr, fatalErr := SqlRowsToByteRows(rows, cols)
+			byteRows, err := SqlRowsToByteRows(rows, cols)
+			expectNoErr(err)
+
+			sqlErr := rows.Err()
 			if sqlErr != nil {
 				hasError = true
 				logBuf.WriteString(sqlErr.Error())
 			} else {
-				expectNoErr(fatalErr)
-				expectNoErr(rows.Err())
 				WriteQueryResult(byteRows, logBuf)
 			}
 		}
