@@ -179,6 +179,10 @@ func runSingleStatement(stmt string, stmtIndex int, db *sql.DB, logChan chan *st
 	}
 	logBuf.WriteString("\n")
 
+	if !hasError {
+		expectNoErr(rows.Close())
+	}
+
 	logChan <- &statementLog{
 		output:    logBuf,
 		stmt:      stmt,
@@ -355,6 +359,11 @@ func main() {
 				return true
 			}
 		}
+
+		if len(excludeList) != 0 {
+			return true
+		}
+
 		return false
 	}
 	iterateTestCases(testCaseDir, true)
