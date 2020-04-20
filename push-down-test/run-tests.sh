@@ -74,7 +74,7 @@ function check_env() {
 function prepare_config() {
   cp -r ${config_path} ${copr_test_build_path}
   config_path="${copr_test_build_path}/config"
-  find ${config_path} -type f -exec sed -i 's@\/tmp\/copr_test@'${copr_test_build_path}'@g' {} \;
+  find ${config_path} -type f -exec sed -i'.bak' 's@\/tmp\/copr_test@'${copr_test_build_path}'@g' {} \;
 
   no_push_down_config_dir="${config_path}/no_push_down"
   with_push_down_config_dir="${config_path}/with_push_down"
@@ -91,7 +91,7 @@ function run_pd() {
   $1 --version
 
   echo
-  echo "+ Launching PD for $5 test"
+  echo "+ Launching PD for $5 test using config $2"
   $1 -config $2 -log-file $3 -L $4 &
 
   # Return the PID of the new PD process
@@ -109,7 +109,7 @@ function run_tikv() {
   $1 --version
 
   echo
-  echo "+ Launching TiKV for $5 test"
+  echo "+ Launching TiKV for $5 test using config $2"
   $1 -C $2 --log-file $3 -L $4 &
 
   # Return the PID of the new TiKV process
@@ -128,7 +128,7 @@ function run_tidb() {
   $1 -V
 
   echo
-  echo "+ Launching TiDB for $6 test"
+  echo "+ Launching TiDB for $6 test using config $2"
   export GO_FAILPOINTS="$5"
   $1 -config $2 -log-file $3 -L $4 &
 
