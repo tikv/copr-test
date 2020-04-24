@@ -74,7 +74,7 @@ function check_env() {
 function prepare_config() {
   cp -r ${config_path} ${copr_test_build_path}
   config_path="${copr_test_build_path}/config"
-  find ${config_path} -type f -exec sed -i 's@\/tmp\/copr_test@'${copr_test_build_path}'@g' {} \;
+  find ${config_path} -type f -exec sed -i'.bak' "s@\/tmp\/copr_test@${copr_test_build_path}@g" {} \;
 
   no_push_down_config_dir="${config_path}/no_push_down"
   with_push_down_config_dir="${config_path}/with_push_down"
