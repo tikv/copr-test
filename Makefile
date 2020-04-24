@@ -1,7 +1,7 @@
 all: push-down-test
 
 .PHONY: push-down-test
-push-down-test:
+push-down-test: clean
 	@cd ./push-down-test && bash ./run-tests.sh full-test
 
 .PHONY: no-push-down

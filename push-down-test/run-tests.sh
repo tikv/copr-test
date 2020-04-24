@@ -74,7 +74,7 @@ function check_env() {
 function prepare_config() {
   cp -r ${config_path} ${copr_test_build_path}
   config_path="${copr_test_build_path}/config"
-  find ${config_path} -type f -exec sed -i'.bak' 's@\/tmp\/copr_test@'${copr_test_build_path}'@g' {} \;
+  find ${config_path} -type f -exec sed -i'.bak' "s@\/tmp\/copr_test@${copr_test_build_path}@g" {} \;
 
   no_push_down_config_dir="${config_path}/no_push_down"
   with_push_down_config_dir="${config_path}/with_push_down"
@@ -91,7 +91,16 @@ function run_pd() {
   $1 --version
 
   echo
+  echo "+ Current PD process:"
+  ps ux | grep pd-server
+
+  echo
   echo "+ Launching PD for $5 test using config $2"
+  echo
+  echo "  - Config content:"
+  cat $2
+  echo "  - Starting process..."
+  echo $1 -config $2 -log-file $3 -L $4
   $1 -config $2 -log-file $3 -L $4 &
 
   # Return the PID of the new PD process
@@ -109,7 +118,16 @@ function run_tikv() {
   $1 --version
 
   echo
+  echo "+ Current TiKV process:"
+  ps ux | grep tikv-server
+
+  echo
   echo "+ Launching TiKV for $5 test using config $2"
+  echo
+  echo "  - Config content:"
+  cat $2
+  echo "  - Starting process..."
+  echo $1 -C $2 --log-file $3 -L $4
   $1 -C $2 --log-file $3 -L $4 &
 
   # Return the PID of the new TiKV process
@@ -128,8 +146,21 @@ function run_tidb() {
   $1 -V
 
   echo
+  echo "+ TiDB temp directory:"
+  ls -R /tmp/tidb
+
+  echo
+  echo "+ Current TiDB process:"
+  ps ux | grep tidb-server
+
+  echo
   echo "+ Launching TiDB for $6 test using config $2"
+  echo
+  echo "  - Config content:"
+  cat $2
+  echo "  - Starting process..."
   export GO_FAILPOINTS="$5"
+  echo $1 -config $2 -log-file $3 -L $4
   $1 -config $2 -log-file $3 -L $4 &
 
   # Return the PID of the new TiDB process
@@ -193,11 +224,18 @@ function clean_build() {
 function kill_all_proc() {
   echo
   echo "+ Kill all processes"
-
-  pkill -9 -U ${USER} tidb-server
-  pkill -9 -U ${USER} tikv-server
-  pkill -9 -U ${USER} pd-server
-  exit 0
+  echo "  - Running processes"
+  ps ux | grep tidb-server
+  ps ux | grep tikv-server
+  ps ux | grep pd-server
+  echo "  - Killing processes"
+  killall -9 tidb-server
+  killall -9 tikv-server
+  killall -9 pd-server
+  echo "  - Running processes after cleaning"
+  ps ux | grep tidb-server
+  ps ux | grep tikv-server
+  ps ux | grep pd-server
 }
 
 function prebuild() {
