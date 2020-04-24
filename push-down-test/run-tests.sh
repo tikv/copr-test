@@ -100,6 +100,7 @@ function run_pd() {
   echo "  - Config content:"
   cat $2
   echo "  - Starting process..."
+  echo $1 -config $2 -log-file $3 -L $4
   $1 -config $2 -log-file $3 -L $4 &
 
   # Return the PID of the new PD process
@@ -126,6 +127,7 @@ function run_tikv() {
   echo "  - Config content:"
   cat $2
   echo "  - Starting process..."
+  echo $1 -C $2 --log-file $3 -L $4
   $1 -C $2 --log-file $3 -L $4 &
 
   # Return the PID of the new TiKV process
@@ -158,6 +160,7 @@ function run_tidb() {
   cat $2
   echo "  - Starting process..."
   export GO_FAILPOINTS="$5"
+  echo $1 -config $2 -log-file $3 -L $4
   $1 -config $2 -log-file $3 -L $4 &
 
   # Return the PID of the new TiDB process
