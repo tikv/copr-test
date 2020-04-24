@@ -22,7 +22,7 @@ realpath() {
 readonly copr_test_build_path="$(realpath ./build)"
 readonly push_down_test_bin="${copr_test_build_path}/push_down_test_bin"
 readonly data_souce="$(realpath ./prepare/0_data.sql)"
-readonly data_dir="${copr_test_build_path}/data"
+readonly copr_test_data_dir="${copr_test_build_path}/data"
 readonly no_push_tidb_data_dir="${copr_test_data_dir}/no_push_tidb"
 readonly push_pd_data_dir="${copr_test_data_dir}/push_pd"
 readonly push_tikv_data_dir="${copr_test_data_dir}/push_tikv"
@@ -37,7 +37,7 @@ echo "  - copr_test_build_path: ${copr_test_build_path}"
 echo "  - push_down_test_bin:   ${push_down_test_bin}"
 echo "  - data_souce:           ${data_souce}"
 echo
-echo "  - data_dir:              ${data_dir}"
+echo "  - copr_test_data_dir:    ${copr_test_data_dir}"
 echo "  - no_push_tidb_data_dir: ${no_push_tidb_data_dir}"
 echo "  - push_pd_data_dir:      ${push_pd_data_dir}"
 echo "  - push_tikv_data_dir:    ${push_tikv_data_dir}"
@@ -326,7 +326,7 @@ function start_full_test() {
   wait_for_tikv ${with_push_down_tikv_log_file} "WithPushDown"
 
   # Run all tidbs
-  run_tidb ${tidb_bin} ${no_push_down_config_dir}/tidb.toml ${no_push_down_tidb_log_file} ${log_level} "-path ${copr_test_data_dir}" "" "NoPushDown"
+  run_tidb ${tidb_bin} ${no_push_down_config_dir}/tidb.toml ${no_push_down_tidb_log_file} ${log_level} "-path ${no_push_tidb_data_dir}" "" "NoPushDown"
   run_tidb ${tidb_bin} ${with_push_down_config_dir}/tidb.toml ${with_push_down_tidb_log_file} ${log_level} "" \
     "github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/expression/PanicIfPbCodeUnspecified=return(true)" \
     "WithPushDown"
@@ -372,7 +372,7 @@ function start_push_down_with_vec_test() {
 
 function start_no_push_down_test() {
   no_push_down_prebuild
-  run_tidb ${tidb_bin} ${no_push_down_config_dir}/tidb.toml ${no_push_down_tidb_log_file} ${log_level} "-path ${copr_test_data_dir}" "" "NoPushDown"
+  run_tidb ${tidb_bin} ${no_push_down_config_dir}/tidb.toml ${no_push_down_tidb_log_file} ${log_level} "-path ${no_push_tidb_data_dir}" "" "NoPushDown"
   my_sleep 10 "TiDB"
 
   wait_for_tidb ${tidb_user} ${tidb_host} ${no_push_down_tidb_port} "NoPushDown"
