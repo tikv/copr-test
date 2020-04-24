@@ -233,11 +233,11 @@ function clean_build() {
   mkdir -p ${no_push_tidb_data_dir}
   mkdir -p ${push_pd_data_dir}
   mkdir -p ${push_tikv_data_dir}
-  cp ${config_path_base} ${config_path}
+  cp -r ${config_path_base} ${config_path}
   echo "+ Build directory files"
   ls -R ${copr_test_build_path}
   echo "+ Build directory content"
-  find . -type f -exec cat {} +
+  find ${copr_test_build_path} -type f -exec cat {} +
 }
 
 function kill_all_proc() {
