@@ -389,7 +389,6 @@ elif [ "$1" == "no-push-down" ]; then
 elif [ "$1" == "with-push-down" ]; then
   start_push_down_with_vec_test
 elif [ "$1" == "clean" ]; then
-  clean_build
   kill_all_proc
 else
   echo "Wrong command"
