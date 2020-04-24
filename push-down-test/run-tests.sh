@@ -229,6 +229,10 @@ function kill_all_proc() {
   killall -9 tidb-server
   killall -9 tikv-server
   killall -9 pd-server
+  echo "  - Running processes after cleaning"
+  ps ux | grep tidb-server
+  ps ux | grep tikv-server
+  ps ux | grep pd-server
 }
 
 function prebuild() {
