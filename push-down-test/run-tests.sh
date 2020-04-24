@@ -91,6 +91,10 @@ function run_pd() {
   $1 --version
 
   echo
+  echo "+ Current PD process:"
+  ps ux | grep pd-server
+
+  echo
   echo "+ Launching PD for $5 test using config $2"
   echo
   echo "  - Config content:"
@@ -111,6 +115,10 @@ function run_tikv() {
   echo
   echo "+ TiKV version:"
   $1 --version
+
+  echo
+  echo "+ Current TiKV process:"
+  ps ux | grep tikv-server
 
   echo
   echo "+ Launching TiKV for $5 test using config $2"
@@ -134,6 +142,14 @@ function run_tidb() {
   echo
   echo "+ TiDB version:"
   $1 -V
+
+  echo
+  echo "+ TiDB temp directory:"
+  ls -R /tmp/tidb
+
+  echo
+  echo "+ Current TiDB process:"
+  ps ux | grep tidb-server
 
   echo
   echo "+ Launching TiDB for $6 test using config $2"
@@ -205,11 +221,14 @@ function clean_build() {
 function kill_all_proc() {
   echo
   echo "+ Kill all processes"
-
-  pkill -9 -U ${USER} tidb-server
-  pkill -9 -U ${USER} tikv-server
-  pkill -9 -U ${USER} pd-server
-  exit 0
+  echo "  - Running processes"
+  ps ux | grep tidb-server
+  ps ux | grep tikv-server
+  ps ux | grep pd-server
+  echo "  - Killing processes"
+  killall -9 tidb-server
+  killall -9 tikv-server
+  killall -9 pd-server
 }
 
 function prebuild() {
