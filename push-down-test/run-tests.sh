@@ -22,15 +22,31 @@ realpath() {
 readonly copr_test_build_path="$(realpath ./build)"
 readonly push_down_test_bin="${copr_test_build_path}/push_down_test_bin"
 readonly data_souce="$(realpath ./prepare/0_data.sql)"
+readonly copr_test_data_dir="${copr_test_build_path}/data"
+readonly no_push_tidb_data_dir="${copr_test_data_dir}/no_push_tidb"
+readonly push_pd_data_dir="${copr_test_data_dir}/push_pd"
+readonly push_tikv_data_dir="${copr_test_data_dir}/push_tikv"
+readonly config_path_base="$(realpath ./config)"
+readonly config_path="${copr_test_build_path}/config"
+readonly no_push_down_config_dir="${config_path}/no_push_down"
+readonly with_push_down_config_dir="${config_path}/with_push_down"
 
-echo "+ copr_test_build_path"
-echo "$copr_test_build_path"
-
-echo "+ push_down_test_bin"
-echo "$push_down_test_bin"
-
-echo "+ data_souce"
-echo "$data_souce"
+echo "+ Variables"
+echo
+echo "  - copr_test_build_path: ${copr_test_build_path}"
+echo "  - push_down_test_bin:   ${push_down_test_bin}"
+echo "  - data_souce:           ${data_souce}"
+echo
+echo "  - copr_test_data_dir:    ${copr_test_data_dir}"
+echo "  - no_push_tidb_data_dir: ${no_push_tidb_data_dir}"
+echo "  - push_pd_data_dir:      ${push_pd_data_dir}"
+echo "  - push_tikv_data_dir:    ${push_tikv_data_dir}"
+echo
+echo "  - config_path_base:          ${config_path_base}"
+echo "  - config_path:               ${config_path}"
+echo "  - no_push_down_config_dir:   ${no_push_down_config_dir}"
+echo "  - with_push_down_config_dir: ${with_push_down_config_dir}"
+echo
 
 # These log locations should be the same as which in CI script
 # https://internal.pingcap.net/idc-jenkins/job/tikv_ghpr_integration_pushdownfunc_test/configure
@@ -40,7 +56,7 @@ readonly with_push_down_tikv_log_file="${copr_test_build_path}/tikv_with_push_do
 readonly with_push_down_pd_log_file="${copr_test_build_path}/pd_with_push_down.log"
 
 # Config paths
-config_path="$(realpath ./config)"
+
 
 # Read only variables
 readonly tidb_src_url="https://github.com/pingcap/tidb/archive/master.zip"
@@ -71,20 +87,12 @@ function check_env() {
   fi
 }
 
-function prepare_config() {
-  cp -r ${config_path} ${copr_test_build_path}
-  config_path="${copr_test_build_path}/config"
-  find ${config_path} -type f -exec sed -i'.bak' "s@\/tmp\/copr_test@${copr_test_build_path}@g" {} \;
-
-  no_push_down_config_dir="${config_path}/no_push_down"
-  with_push_down_config_dir="${config_path}/with_push_down"
-}
-
 # $1: PD binary path
 # $2: configuration file
 # $3: log file
 # $4: log level
-# $5: message type: WithPushDown
+# $5: extra params
+# $6: message type: WithPushDown
 function run_pd() {
   echo
   echo "+ PD version:"
@@ -95,13 +103,13 @@ function run_pd() {
   ps ux | grep pd-server
 
   echo
-  echo "+ Launching PD for $5 test using config $2"
+  echo "+ Launching PD for $6 test using config $2"
   echo
   echo "  - Config content:"
   cat $2
   echo "  - Starting process..."
-  echo $1 -config $2 -log-file $3 -L $4
-  $1 -config $2 -log-file $3 -L $4 &
+  echo $1 -config $2 -log-file $3 -L $4 $5
+  $1 -config $2 -log-file $3 -L $4 $5 &
 
   # Return the PID of the new PD process
   pd_processes+=("$!")
@@ -111,7 +119,8 @@ function run_pd() {
 # $2: configuration file
 # $3: log file
 # $4: log level
-# $5: message type: WithPushDown
+# $5: extra params
+# $6: message type: WithPushDown
 function run_tikv() {
   echo
   echo "+ TiKV version:"
@@ -122,13 +131,13 @@ function run_tikv() {
   ps ux | grep tikv-server
 
   echo
-  echo "+ Launching TiKV for $5 test using config $2"
+  echo "+ Launching TiKV for $6 test using config $2"
   echo
   echo "  - Config content:"
   cat $2
   echo "  - Starting process..."
-  echo $1 -C $2 --log-file $3 -L $4
-  $1 -C $2 --log-file $3 -L $4 &
+  echo $1 -C $2 --log-file $3 -L $4 $5
+  $1 -C $2 --log-file $3 -L $4 $5 &
 
   # Return the PID of the new TiKV process
   tikv_processes+=("$!")
@@ -138,8 +147,9 @@ function run_tikv() {
 # $2: configuration file
 # $3: log file
 # $4: log level
-# $5: value for failpoint environment variable
-# $6: message type: NoPushDown/WithPushDown
+# $5: extra params
+# $6: value for failpoint environment variable
+# $7: message type: NoPushDown/WithPushDown
 function run_tidb() {
   echo
   echo "+ TiDB version:"
@@ -154,14 +164,14 @@ function run_tidb() {
   ps ux | grep tidb-server
 
   echo
-  echo "+ Launching TiDB for $6 test using config $2"
+  echo "+ Launching TiDB for $7 test using config $2"
   echo
   echo "  - Config content:"
   cat $2
   echo "  - Starting process..."
-  export GO_FAILPOINTS="$5"
-  echo $1 -config $2 -log-file $3 -L $4
-  $1 -config $2 -log-file $3 -L $4 &
+  export GO_FAILPOINTS="$6"
+  echo $1 -config $2 -log-file $3 -L $4 $5
+  $1 -config $2 -log-file $3 -L $4 $5 &
 
   # Return the PID of the new TiDB process
   tidb_processes+=("$!")
@@ -216,9 +226,18 @@ function clean_all_proc() {
 
 function clean_build() {
   echo
-  echo "+ Cleaning up temp directory stale data: ${copr_test_build_path}"
+  echo "+ Cleaning up build directory stale data: ${copr_test_build_path}"
   mkdir -p ${copr_test_build_path}
   rm -rf ${copr_test_build_path}/*
+  echo "+ Prepare build directory"
+  mkdir -p ${no_push_tidb_data_dir}
+  mkdir -p ${push_pd_data_dir}
+  mkdir -p ${push_tikv_data_dir}
+  cp -r ${config_path_base} ${config_path}
+  echo "+ Build directory files"
+  ls -R ${copr_test_build_path}
+  echo "+ Build directory content"
+  find ${copr_test_build_path} -type f -exec cat {} +
 }
 
 function kill_all_proc() {
@@ -241,14 +260,12 @@ function kill_all_proc() {
 function prebuild() {
   check_env
   clean_build
-  prepare_config
   build_tidb
   build_tester
 }
 
 function no_push_down_prebuild() {
   clean_build
-  prepare_config
   build_tidb
 }
 
@@ -301,16 +318,16 @@ function start_full_test() {
   prebuild
 
   # Run all PDs
-  run_pd ${pd_bin} ${with_push_down_config_dir}/pd.toml ${with_push_down_pd_log_file} ${log_level} "PushWithPushDown"
+  run_pd ${pd_bin} ${with_push_down_config_dir}/pd.toml ${with_push_down_pd_log_file} ${log_level} "-data-dir ${push_pd_data_dir}"  "PushWithPushDown"
   my_sleep 3 "PD"
 
   # Run all TiKVs
-  run_tikv ${tikv_bin} ${with_push_down_config_dir}/tikv.toml ${with_push_down_tikv_log_file} ${log_level} "WithPushDown"
+  run_tikv ${tikv_bin} ${with_push_down_config_dir}/tikv.toml ${with_push_down_tikv_log_file} ${log_level} "--data-dir ${push_tikv_data_dir}" "WithPushDown"
   wait_for_tikv ${with_push_down_tikv_log_file} "WithPushDown"
 
   # Run all tidbs
-  run_tidb ${tidb_bin} ${no_push_down_config_dir}/tidb.toml ${no_push_down_tidb_log_file} ${log_level} "" "NoPushDown"
-  run_tidb ${tidb_bin} ${with_push_down_config_dir}/tidb.toml ${with_push_down_tidb_log_file} ${log_level} \
+  run_tidb ${tidb_bin} ${no_push_down_config_dir}/tidb.toml ${no_push_down_tidb_log_file} ${log_level} "-path ${no_push_tidb_data_dir}" "" "NoPushDown"
+  run_tidb ${tidb_bin} ${with_push_down_config_dir}/tidb.toml ${with_push_down_tidb_log_file} ${log_level} "" \
     "github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/expression/PanicIfPbCodeUnspecified=return(true)" \
     "WithPushDown"
   my_sleep 10 "TiDB"
@@ -337,12 +354,12 @@ function start_full_test() {
 function start_push_down_with_vec_test() {
   prebuild
 
-  run_pd ${pd_bin} ${with_push_down_config_dir}/pd.toml ${with_push_down_pd_log_file} ${log_level} "PushWithPushDown"
+  run_pd ${pd_bin} ${with_push_down_config_dir}/pd.toml ${with_push_down_pd_log_file} ${log_level} "-data-dir ${push_pd_data_dir}" "PushWithPushDown"
   my_sleep 3 "PD"
 
-  run_tikv ${tikv_bin} ${with_push_down_config_dir}/tikv.toml ${with_push_down_tikv_log_file} ${log_level} "WithPushDown"
+  run_tikv ${tikv_bin} ${with_push_down_config_dir}/tikv.toml ${with_push_down_tikv_log_file} ${log_level} "--data-dir ${push_tikv_data_dir}" "WithPushDown"
   wait_for_tikv ${with_push_down_tikv_log_file} "WithPushDown"
-  run_tidb ${tidb_bin} ${with_push_down_config_dir}/tidb.toml ${with_push_down_tidb_log_file} ${log_level} \
+  run_tidb ${tidb_bin} ${with_push_down_config_dir}/tidb.toml ${with_push_down_tidb_log_file} ${log_level} "" \
     "github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/expression/PanicIfPbCodeUnspecified=return(true)" \
     "WithPushDown"
   my_sleep 10 "TiDB"
@@ -355,7 +372,7 @@ function start_push_down_with_vec_test() {
 
 function start_no_push_down_test() {
   no_push_down_prebuild
-  run_tidb ${tidb_bin} ${no_push_down_config_dir}/tidb.toml ${no_push_down_tidb_log_file} ${log_level} "" "NoPushDown"
+  run_tidb ${tidb_bin} ${no_push_down_config_dir}/tidb.toml ${no_push_down_tidb_log_file} ${log_level} "-path ${no_push_tidb_data_dir}" "" "NoPushDown"
   my_sleep 10 "TiDB"
 
   wait_for_tidb ${tidb_user} ${tidb_host} ${no_push_down_tidb_port} "NoPushDown"
@@ -372,7 +389,6 @@ elif [ "$1" == "no-push-down" ]; then
 elif [ "$1" == "with-push-down" ]; then
   start_push_down_with_vec_test
 elif [ "$1" == "clean" ]; then
-  clean_build
   kill_all_proc
 else
   echo "Wrong command"

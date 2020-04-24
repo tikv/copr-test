@@ -1,4 +1,3 @@
 name = "pd"
-data-dir = "/tmp/copr_test/pd_with_batch"
 client-urls = "http://127.0.0.1:4479"
 peer-urls = "http://127.0.0.1:4480"
