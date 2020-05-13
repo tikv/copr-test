@@ -30,10 +30,11 @@ var verboseOutput *bool
 var fileFilter func(file string) bool
 
 type statementLog struct {
-	output    *bytes.Buffer
+	output    string
 	stmt      string
 	stmtIndex int
 	hasError  bool
+	plan      string
 }
 
 func parseSQLText(data string) (res []ast.StmtNode, warns []error, err error) {
@@ -147,38 +148,66 @@ func runTestCase(testCasePath string) bool {
 
 func runStatements(logChan chan *statementLog, connString string, statements []string) {
 	db := mustDBOpen(connString, *dbName)
+	connID := getConnectionID(db)
 	for i, stmt := range statements {
-		runSingleStatement(stmt, i, db, logChan)
+		runSingleStatement(stmt, i, db, connID, logChan)
 	}
 	mustDBClose(db)
 	close(logChan)
 }
 
-func runSingleStatement(stmt string, stmtIndex int, db *sql.DB, logChan chan *statementLog) bool {
+func getConnectionID(db *sql.DB) int {
+	v := 0
+	err := db.QueryRow("select connection_id();").Scan(&v)
+	expectNoErr(err)
+	return v
+}
+
+func runQuery(db *sql.DB, sql string) (string, error) {
+	rows, err := db.Query(sql)
+	buf := new(bytes.Buffer)
+	if err != nil {
+		return "", err
+	}
+	defer func() {
+		expectNoErr(rows.Close())
+	}()
+	cols, err := rows.Columns()
+	expectNoErr(err)
+	if len(cols) > 0 {
+		byteRows, err := SqlRowsToByteRows(rows, cols)
+		expectNoErr(err)
+
+		sqlErr := rows.Err()
+		if sqlErr != nil {
+			return "", sqlErr
+		}
+		WriteQueryResult(byteRows, buf)
+	}
+	buf.WriteString("\n")
+
+	return buf.String(), nil
+}
+
+func runSingleStatement(stmt string, stmtIndex int, db *sql.DB, connID int, logChan chan *statementLog) bool {
 	hasError := false
-	logBuf := new(bytes.Buffer)
-	rows, err := db.Query(stmt)
+	output, err := runQuery(db, stmt)
 	if err != nil {
 		hasError = true
-		logBuf.WriteString(string(err.Error()))
-		logBuf.WriteString("\n")
-	} else {
-		cols, err := rows.Columns()
-		expectNoErr(err)
-		if len(cols) > 0 {
-			byteRows, err := SqlRowsToByteRows(rows)
-			expectNoErr(err)
-			WriteQueryResult(byteRows, logBuf)
-		}
-		logBuf.WriteString("\n")
-		expectNoErr(rows.Close())
-		expectNoErr(rows.Err())
+		output = err.Error() + "\n"
 	}
+
+	plan, err := runQuery(db, fmt.Sprintf("explain for connection %d;", connID))
+	if err != nil {
+		plan = fmt.Sprintf("Failed to get plan: %s", err.Error())
+	}
+
 	logChan <- &statementLog{
-		output:    logBuf,
+		output:    output,
 		stmt:      stmt,
 		stmtIndex: stmtIndex,
 		hasError:  hasError,
+		plan:      plan,
 	}
 	return !hasError
 }
@@ -235,7 +264,7 @@ func diffRunResult(
 			}
 		} else {
 			// If there are no error, check content
-			if !bytes.Equal(noPushDownLog.output.Bytes(), pushDownWithBatchLog.output.Bytes()) {
+			if noPushDownLog.output != pushDownWithBatchLog.output {
 				diffFail = true
 			}
 		}
@@ -246,12 +275,16 @@ func diffRunResult(
 				"Test case: %s\n"+
 				"Statement: #%d - %s\n"+
 				"NoPushDown Output: \n%s\n"+
-				"WithPushDown Output: \n%s\n\n",
+				"WithPushDown Output: \n%s\n\n"+
+				"NoPushDown Plan: \n%s\n"+
+				"WithPushDown Plan: \n%s\n\n",
 				testCasePath,
 				noPushDownLog.stmtIndex,
 				noPushDownLog.stmt,
-				string(noPushDownLog.output.Bytes()),
-				string(pushDownWithBatchLog.output.Bytes()))
+				noPushDownLog.output,
+				pushDownWithBatchLog.output,
+				noPushDownLog.plan,
+				pushDownWithBatchLog.plan)
 		} else if hasError {
 			if *verboseOutput {
 				logger.Printf("Warn: Execute fail, diff skipped.\n"+
@@ -262,8 +295,8 @@ func diffRunResult(
 					testCasePath,
 					noPushDownLog.stmtIndex,
 					noPushDownLog.stmt,
-					string(noPushDownLog.output.Bytes()),
-					string(pushDownWithBatchLog.output.Bytes()))
+					noPushDownLog.output,
+					pushDownWithBatchLog.output)
 			}
 		} else {
 			if *verboseOutput {
@@ -350,6 +383,11 @@ func main() {
 				return true
 			}
 		}
+
+		if len(excludeList) != 0 {
+			return true
+		}
+
 		return false
 	}
 	iterateTestCases(testCaseDir, true)

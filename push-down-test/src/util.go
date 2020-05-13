@@ -42,12 +42,7 @@ func (rows *ByteRows) Swap(i, j int) {
 	rows.Data[i], rows.Data[j] = rows.Data[j], rows.Data[i]
 }
 
-func SqlRowsToByteRows(rows *sql.Rows) (*ByteRows, error) {
-	cols, err := rows.Columns()
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-
+func SqlRowsToByteRows(rows *sql.Rows, cols []string) (*ByteRows, error) {
 	data := make([]ByteRow, 0, 8)
 	args := make([]interface{}, len(cols))
 	for rows.Next() {
@@ -61,10 +56,6 @@ func SqlRowsToByteRows(rows *sql.Rows) (*ByteRows, error) {
 		}
 
 		data = append(data, ByteRow{tmp})
-	}
-	err = rows.Err()
-	if err != nil {
-		return nil, errors.Trace(err)
 	}
 
 	return &ByteRows{Cols: cols, Data: data}, nil
