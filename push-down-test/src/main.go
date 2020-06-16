@@ -62,6 +62,17 @@ func readAndParseSQLText(sqlFilePath string) []ast.StmtNode {
 func prepareDB(connString string) {
 	log.Printf("Preparing database [%s] for [%s]...", *dbName, connString)
 	db := mustDBOpen(connString, "")
+	// Since TiDB PR #16999, the default concurrency is decided by the cores of cpu,
+	// we reset these to make the exist test pass
+	mustDBExec(db, "set @@tidb_index_lookup_concurrency=4;")
+	mustDBExec(db, "set @@tidb_index_lookup_join_concurrency=4;")
+	mustDBExec(db, "set @@tidb_hash_join_concurrency=5;")
+	mustDBExec(db, "set @@tidb_hashagg_final_concurrency=4;")
+	mustDBExec(db, "set @@tidb_hashagg_partial_concurrency=4;")
+	mustDBExec(db, "set @@tidb_window_concurrency=4;")
+	mustDBExec(db, "set @@tidb_projection_concurrency=4;")
+	mustDBExec(db, "set @@tidb_distsql_scan_concurrency=15;")
+
 	mustDBExec(db, "drop database if exists `"+*dbName+"`;")
 	mustDBExec(db, "create database `"+*dbName+"`;")
 	mustDBClose(db)
