@@ -156,8 +156,8 @@ func runStatements(logChan chan *statementLog, connString string, statements []s
 	close(logChan)
 }
 
-func getConnectionID(db *sql.DB) int {
-	v := 0
+func getConnectionID(db *sql.DB) uint64 {
+	var v uint64
 	err := db.QueryRow("select connection_id();").Scan(&v)
 	expectNoErr(err)
 	return v
@@ -189,7 +189,7 @@ func runQuery(db *sql.DB, sql string) (string, error) {
 	return buf.String(), nil
 }
 
-func runSingleStatement(stmt string, stmtIndex int, db *sql.DB, connID int, logChan chan *statementLog) bool {
+func runSingleStatement(stmt string, stmtIndex int, db *sql.DB, connID uint64, logChan chan *statementLog) bool {
 	hasError := false
 	output, err := runQuery(db, stmt)
 	if err != nil {
