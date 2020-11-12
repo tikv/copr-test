@@ -96,6 +96,8 @@ dayofmonth
 dayofyear
 from_days
 #to_days
+add_datetime_and_duration
+sub_datetime_and_duration
 is_ipv4
 is_ipv4_compat
 is_ipv4_mapped
