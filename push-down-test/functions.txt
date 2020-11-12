@@ -25,6 +25,7 @@ plus
 minus
 mul
 div
+mod
 abs
 ceil
 ceiling
