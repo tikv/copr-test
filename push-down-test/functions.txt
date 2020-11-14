@@ -17,6 +17,7 @@ nulleq
 in
 isnull
 like
+regexp
 istrue
 isfalse
 leftshift
