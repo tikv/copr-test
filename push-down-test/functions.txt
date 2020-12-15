@@ -12,10 +12,12 @@ le
 eq
 ne
 ge
+greatest
 gt
 nulleq
 in
 isnull
+least
 like
 istrue
 isfalse
