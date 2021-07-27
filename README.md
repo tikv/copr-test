@@ -59,6 +59,9 @@ git clone https://github.com/tikv/copr-test.git
 cd pd
 make
 
+cd ../tidb
+make
+
 cd ../tikv
 make build  # This make take a while. Be patient.
 
