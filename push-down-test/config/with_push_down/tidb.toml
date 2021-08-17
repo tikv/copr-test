@@ -4,3 +4,6 @@ path = "127.0.0.1:4479"
 
 [status]
 report-status = false
+
+[performance]
+projection-push-down = true

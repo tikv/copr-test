@@ -148,6 +148,8 @@ func runTestCase(testCasePath string) bool {
 
 func runStatements(logChan chan *statementLog, connString string, statements []string) {
 	db := mustDBOpen(connString, *dbName)
+	v := getSessionVariable(db, "tidb_opt_projection_push_down")
+	log.Printf("for %s tidb_opt_projection_push_down=%s\n", connString, v)
 	connID := getConnectionID(db)
 	for i, stmt := range statements {
 		runSingleStatement(stmt, i, db, connID, logChan)
@@ -159,6 +161,13 @@ func runStatements(logChan chan *statementLog, connString string, statements []s
 func getConnectionID(db *sql.DB) uint64 {
 	var v uint64
 	err := db.QueryRow("select connection_id();").Scan(&v)
+	expectNoErr(err)
+	return v
+}
+
+func getSessionVariable(db *sql.DB, varname string) string {
+	var v string
+	err := db.QueryRow(fmt.Sprintf("select @@%s;", varname)).Scan(&v)
 	expectNoErr(err)
 	return v
 }
