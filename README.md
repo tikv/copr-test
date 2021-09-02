@@ -9,7 +9,7 @@ executes TiDB push-down executors to improve performance.
 
 Currently we only have push-down-test to test the Coprocessor module. Push-down-test exists to
 make sure that execution results are consistent between TiDB and Coprocessor. It works by
-executeing test cases on  a standalone TiDB (with mocktikv) and on a TiDB cluster (with TiKV
+executeing test cases on  a standalone TiDB (with unistore, a mocked storage with coprocessors inside TiDB itself) and on a TiDB cluster (with TiKV
 Coprocessor) and comparing the two execution results.
 
 Currently TiKV Coprocessor supports two execution models, the non-vectorized, traditional model and
