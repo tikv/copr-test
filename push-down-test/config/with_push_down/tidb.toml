@@ -1,6 +1,7 @@
 port = 4007
 store = "tikv"
 path = "127.0.0.1:4479"
+socket = ""
 
 [status]
 report-status = false

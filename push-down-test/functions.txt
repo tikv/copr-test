@@ -108,3 +108,4 @@ uncompressed_length
 md5
 sha1
 cast
+mod

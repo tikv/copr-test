@@ -1,5 +1,6 @@
 port = 4005
 store = "mocktikv"
+socket = ""
 
 [status]
 report-status = false
