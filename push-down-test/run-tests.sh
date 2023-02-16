@@ -318,7 +318,7 @@ function start_full_test() {
   prebuild
 
   # Run all PDs
-  run_pd ${pd_bin} ${with_push_down_config_dir}/pd.toml ${with_push_down_pd_log_file} ${log_level} "-data-dir ${push_pd_data_dir}"  "PushWithPushDown"
+  run_pd ${pd_bin} ${with_push_down_config_dir}/pd.toml ${with_push_down_pd_log_file} ${log_level} "--data-dir ${push_pd_data_dir}"  "PushWithPushDown"
   my_sleep 3 "PD"
 
   # Run all TiKVs
