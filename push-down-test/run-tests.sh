@@ -108,8 +108,8 @@ function run_pd() {
   echo "  - Config content:"
   cat $2
   echo "  - Starting process..."
-  echo $1 -config $2 -log-file $3 -L $4 $5
-  $1 -config $2 -log-file $3 -L $4 $5 &
+  echo $1 -config $2 --log-file $3 -L $4 $5
+  $1 -config $2 --log-file $3 -L $4 $5 &
 
   # Return the PID of the new PD process
   pd_processes+=("$!")
