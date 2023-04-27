@@ -148,19 +148,11 @@ func runTestCase(testCasePath string) bool {
 
 func runStatements(logChan chan *statementLog, connString string, statements []string) {
 	db := mustDBOpen(connString, *dbName)
-	connID := getConnectionID(db)
 	for i, stmt := range statements {
-		runSingleStatement(stmt, i, db, connID, logChan)
+		runSingleStatement(stmt, i, db, logChan)
 	}
 	mustDBClose(db)
 	close(logChan)
-}
-
-func getConnectionID(db *sql.DB) uint64 {
-	var v uint64
-	err := db.QueryRow("select connection_id();").Scan(&v)
-	expectNoErr(err)
-	return v
 }
 
 func runQuery(db *sql.DB, sql string) (string, error) {
@@ -189,17 +181,18 @@ func runQuery(db *sql.DB, sql string) (string, error) {
 	return buf.String(), nil
 }
 
-func runSingleStatement(stmt string, stmtIndex int, db *sql.DB, connID uint64, logChan chan *statementLog) bool {
+func runSingleStatement(stmt string, stmtIndex int, db *sql.DB, logChan chan *statementLog) bool {
 	hasError := false
+
+	plan, err := runQuery(db, fmt.Sprintf("EXPLAIN %s", stmt))
+	if err != nil {
+		plan = fmt.Sprintf("Failed to get plan: %s", err.Error())
+	}
+
 	output, err := runQuery(db, stmt)
 	if err != nil {
 		hasError = true
 		output = err.Error() + "\n"
-	}
-
-	plan, err := runQuery(db, fmt.Sprintf("explain for connection %d;", connID))
-	if err != nil {
-		plan = fmt.Sprintf("Failed to get plan: %s", err.Error())
 	}
 
 	logChan <- &statementLog{
