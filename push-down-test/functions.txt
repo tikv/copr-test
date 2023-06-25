@@ -2,6 +2,7 @@ and
 or
 not
 xor
+bit_count
 bitand
 bitneg
 bitor
