@@ -108,8 +108,8 @@ function run_pd() {
   echo "  - Config content:"
   cat $2
   echo "  - Starting process..."
-  echo $1 -config $2 -log-file $3 -L $4 $5
-  $1 -config $2 -log-file $3 -L $4 $5 &
+  echo $1 --config $2 --log-file $3 -L $4 $5
+  $1 --config $2 --log-file $3 -L $4 $5 &
 
   # Return the PID of the new PD process
   pd_processes+=("$!")
@@ -318,7 +318,7 @@ function start_full_test() {
   prebuild
 
   # Run all PDs
-  run_pd ${pd_bin} ${with_push_down_config_dir}/pd.toml ${with_push_down_pd_log_file} ${log_level} "-data-dir ${push_pd_data_dir}"  "PushWithPushDown"
+  run_pd ${pd_bin} ${with_push_down_config_dir}/pd.toml ${with_push_down_pd_log_file} ${log_level} "--data-dir ${push_pd_data_dir}"  "PushWithPushDown"
   my_sleep 3 "PD"
 
   # Run all TiKVs
