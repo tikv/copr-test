@@ -328,7 +328,7 @@ function start_full_test() {
   # Run all tidbs
   run_tidb ${tidb_bin} ${no_push_down_config_dir}/tidb.toml ${no_push_down_tidb_log_file} ${log_level} "-path ${no_push_tidb_data_dir}" "" "NoPushDown"
   run_tidb ${tidb_bin} ${with_push_down_config_dir}/tidb.toml ${with_push_down_tidb_log_file} ${log_level} "" \
-    "github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/expression/PanicIfPbCodeUnspecified=return(true)" \
+    "github.com/pingcap/tidb/pkg/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/pkg/expression/PanicIfPbCodeUnspecified=return(true)" \
     "WithPushDown"
   my_sleep 10 "TiDB"
 
