@@ -15,6 +15,7 @@ ge
 gt
 nulleq
 in
+intdiv
 isnull
 like
 istrue
