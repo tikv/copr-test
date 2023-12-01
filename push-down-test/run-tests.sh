@@ -47,6 +47,12 @@ echo "  - config_path:               ${config_path}"
 echo "  - no_push_down_config_dir:   ${no_push_down_config_dir}"
 echo "  - with_push_down_config_dir: ${with_push_down_config_dir}"
 echo
+echo "+ Push down information"
+echo
+echo "  - no_push_down = Use the built-in push down list in TiDB"
+echo "  - with_push_down = Only enable these push down functions:"
+echo "    ${push_down_func_list}"
+echo
 
 # These log locations should be the same as which in CI script
 # https://internal.pingcap.net/idc-jenkins/job/tikv_ghpr_integration_pushdownfunc_test/configure
