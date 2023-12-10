@@ -2,6 +2,7 @@ port = 4007
 store = "tikv"
 path = "127.0.0.1:4479"
 socket = ""
+tidb_distsql_scan_concurrency = 1
 
 [status]
 report-status = false
