@@ -1,6 +1,6 @@
 module push_down_func_test
 
-go 1.12
+go 1.13
 
 require (
 	github.com/cznic/sortutil v0.0.0-20181122101858-f5f958428db8 // indirect
@@ -17,3 +17,7 @@ require (
 	github.com/uber/jaeger-client-go v2.16.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.0.0+incompatible // indirect
 )
+
+replace sourcegraph.com/sourcegraph/appdash => github.com/sourcegraph/appdash v0.0.0-20180531100431-4c381bd170b4
+
+replace sourcegraph.com/sourcegraph/appdash-data => github.com/sourcegraph/appdash-data v0.0.0-20151005221446-73f23eafcf67

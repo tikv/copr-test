@@ -1,7 +1,3 @@
-# GO environment variables
-export GO111MODULE=on
-export GOPROXY=https://goproxy.io
-
 # These variables should be defined by CI script
 # https://internal.pingcap.net/idc-jenkins/job/tikv_ghpr_integration-cop-push-down-test/configure
 tidb_src_dir=${tidb_src_dir}
