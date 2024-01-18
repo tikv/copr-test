@@ -49,6 +49,7 @@ log
 log2
 log10
 pow
+power
 case
 if
 ifnull
