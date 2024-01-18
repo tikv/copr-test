@@ -195,7 +195,7 @@
  SELECT RADIANS( ( `col_float_unsigned` & ( PI( ) ) ) ) AS field1, `col_bigint_unsigned_key` DIV 1374723786254843904 AS field2, ATAN( 0 ) AS field3 FROM `table1_int_autoinc` WHERE 'epcadhblnmn' * ( ROUND( `col_datetime_key`, 28428 ) ) /* QNO 197 CON_ID 204 */ ;
  SELECT ATAN( `col_bit_key`, '1993-07-10' ) AS field1, LOG( NULL, ( SIGN( `col_int_unsigned` ) ) ) AS field2, NOT `col_char_2_key` AS field3, LOG2( NULL ) AS field4 FROM `table0_int_autoinc` WHERE RADIANS( ( -31357 % ( LOG10( 'pcad' ) ) ) ) /* QNO 198 CON_ID 204 */ ;
  SELECT COS( 0 ) AS field1, 'm' MOD `col_double_unsigned` AS field2 FROM `table20_int_autoinc` WHERE '1980-06-22' + ( ATAN2( `col_tinyint_key`, `col_char_2_key` ) ) /* QNO 199 CON_ID 204 */ ;
- SELECT SIN( `col_decimal_unsigned_key` ) AS field1 FROM `table20_int_autoinc` WHERE POWER( ( ROUND( ( ABS( ( LOG10( ( DEGREES( ( SQRT( `col_varchar_64` ) ) ) ) ) ) ) ) ) ), ( ( POW( `col_float_unsigned_key`, `col_time` ) ) DIV `col_double` ) ) /* QNO 200 CON_ID 204 */ ;
+ SELECT SIN( `col_decimal_unsigned_key` ) AS field1 FROM `table20_int_autoinc` WHERE POWER( ( ( POW( `col_float_unsigned_key`, `col_time` ) ) DIV `col_double` ), ( ROUND( ( ABS( ( LOG10( ( DEGREES( ( SQRT( `col_varchar_64` ) ) ) ) ) ) ) ) ) ) ) /* QNO 200 CON_ID 204 */ ;
  SELECT DEGREES( NULL ) AS field1, LOG2( ( `col_decimal_unsigned` & ( ABS( 9904 ) ) ) ) AS field2, 0 - '1998-10-19 21:05:14.017569' AS field3 FROM `table20_int_autoinc` WHERE PI( ) /* QNO 201 CON_ID 204 */ ;
  SELECT ( LOG( NULL, `col_char_2_key` ) ) && 3414 AS field1, NOT '22:03:48.053615' AS field2 FROM `table10_int_autoinc` WHERE COS( `col_date` ) /* QNO 202 CON_ID 204 */ ;
  SELECT CONV( 'n', 161, 14 ) AS field1 FROM `table1000_int_autoinc` WHERE - `col_bit` /* QNO 203 CON_ID 204 */ ;
