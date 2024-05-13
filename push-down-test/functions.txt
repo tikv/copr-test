@@ -15,6 +15,7 @@ ge
 gt
 nulleq
 in
+intdiv
 isnull
 like
 istrue
@@ -48,6 +49,7 @@ log
 log2
 log10
 pow
+power
 case
 if
 ifnull

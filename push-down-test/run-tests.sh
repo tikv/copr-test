@@ -1,7 +1,3 @@
-# GO environment variables
-export GO111MODULE=on
-export GOPROXY=https://goproxy.io
-
 # These variables should be defined by CI script
 # https://internal.pingcap.net/idc-jenkins/job/tikv_ghpr_integration-cop-push-down-test/configure
 tidb_src_dir=${tidb_src_dir}
@@ -108,8 +104,8 @@ function run_pd() {
   echo "  - Config content:"
   cat $2
   echo "  - Starting process..."
-  echo $1 -config $2 -log-file $3 -L $4 $5
-  $1 -config $2 -log-file $3 -L $4 $5 &
+  echo $1 --config $2 --log-file $3 -L $4 $5
+  $1 --config $2 --log-file $3 -L $4 $5 &
 
   # Return the PID of the new PD process
   pd_processes+=("$!")
@@ -318,7 +314,7 @@ function start_full_test() {
   prebuild
 
   # Run all PDs
-  run_pd ${pd_bin} ${with_push_down_config_dir}/pd.toml ${with_push_down_pd_log_file} ${log_level} "-data-dir ${push_pd_data_dir}"  "PushWithPushDown"
+  run_pd ${pd_bin} ${with_push_down_config_dir}/pd.toml ${with_push_down_pd_log_file} ${log_level} "--data-dir ${push_pd_data_dir}"  "PushWithPushDown"
   my_sleep 3 "PD"
 
   # Run all TiKVs
@@ -328,7 +324,7 @@ function start_full_test() {
   # Run all tidbs
   run_tidb ${tidb_bin} ${no_push_down_config_dir}/tidb.toml ${no_push_down_tidb_log_file} ${log_level} "-path ${no_push_tidb_data_dir}" "" "NoPushDown"
   run_tidb ${tidb_bin} ${with_push_down_config_dir}/tidb.toml ${with_push_down_tidb_log_file} ${log_level} "" \
-    "github.com/pingcap/tidb/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/expression/PanicIfPbCodeUnspecified=return(true)" \
+    "github.com/pingcap/tidb/pkg/expression/PushDownTestSwitcher=return(\"$push_down_func_list\");github.com/pingcap/tidb/pkg/expression/PanicIfPbCodeUnspecified=return(true)" \
     "WithPushDown"
   my_sleep 10 "TiDB"
 
