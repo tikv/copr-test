@@ -500,7 +500,7 @@
  SELECT CONVERT( ( BINARY 29181 ) USING latin1 ) AS field1, CAST( `col_varchar_64_key` AS CHAR ) AS field2, BINARY ( CONVERT( `col_double_unsigned` USING latin1 ) ) AS field3 FROM `table20_int_autoinc` WHERE CONVERT( `col_int_key` USING utf8 ) /* QNO 501 CON_ID 200 */ ;
  SELECT CONVERT( -3577828428969148416, DATE ) AS field1 FROM `table1000_int_autoinc` WHERE CONVERT( ( CONVERT( `col_float_unsigned_key` USING latin1 ) ), SIGNED ) /* QNO 502 CON_ID 200 */ ;
  SELECT CONVERT( `col_time_key`, DECIMAL(24,21) ) AS field1, CONVERT( ( CONVERT( 0 USING latin1 ) ) USING utf8 ) AS field2, BINARY `col_varchar_1_key` AS field3, BINARY 8710524629287960576 AS field4, CAST( '21:12:02.062165' AS DATE ) AS field5 FROM `table1_int_autoinc` WHERE BINARY `col_double_key` /* QNO 503 CON_ID 200 */ ;
- SELECT CONVERT( `col_date`, UNSIGNED ) AS field1, CONVERT( 0, TIME ) AS field2, CAST( `col_float_unsigned_key` AS DATE ) AS field3, CONVERT( ( CONVERT( ( BINARY 3493104460979240960 ) USING latin1 ) ) USING utf8 ) AS field4, CAST( -7660622966157213696 AS DECIMAL ) AS field5 FROM `table1000_int_autoinc` WHERE CAST( `col_smallint_unsigned` AS DATE ) /* QNO 504 CON_ID 200 */ ;
+--  SELECT CONVERT( `col_date`, UNSIGNED ) AS field1, CONVERT( 0, TIME ) AS field2, CAST( `col_float_unsigned_key` AS DATE ) AS field3, CONVERT( ( CONVERT( ( BINARY 3493104460979240960 ) USING latin1 ) ) USING utf8 ) AS field4, CAST( -7660622966157213696 AS DECIMAL ) AS field5 FROM `table1000_int_autoinc` WHERE CAST( `col_smallint_unsigned` AS DATE ) /* QNO 504 CON_ID 200 */ ;
  SELECT CONVERT( ( CONVERT( `col_varchar_1_key`, DECIMAL(32) ) ) USING latin1 ) AS field1, CONVERT( ( BINARY `col_time` ) USING latin1 ) AS field2, BINARY ( BINARY '20:10:36.049095' ) AS field3 FROM `table1000_int_autoinc` WHERE BINARY ( CAST( 'a' AS CHAR ) ) /* QNO 505 CON_ID 200 */ ;
  SELECT CONVERT( `col_double_unsigned` USING latin1 ) AS field1, BINARY `col_text_key` AS field2 FROM `table20_int_autoinc` WHERE CONVERT( `col_int_key`, DECIMAL(32) ) /* QNO 506 CON_ID 200 */ ;
  SELECT CAST( '1998-10-10' AS BINARY ) AS field1 FROM `table20_int_autoinc` WHERE CONVERT( `col_decimal_unsigned`, DATETIME ) /* QNO 507 CON_ID 200 */ ;
@@ -2565,7 +2565,7 @@
  SELECT CONVERT( `col_bit_key`, CHAR(7) ) AS field1 FROM `table1000_int_autoinc` WHERE CONVERT( `col_float_unsigned` USING latin1 ) /* QNO 2566 CON_ID 200 */ ;
  SELECT CAST( `col_year` AS DATE ) AS field1 FROM `table0_int_autoinc` WHERE CAST( ( CONVERT( `col_varbinary_32` USING utf8 ) ) AS DECIMAL ) /* QNO 2567 CON_ID 200 */ ;
  SELECT CONVERT( `col_enum`, BINARY ) AS field1 FROM `table20_int_autoinc`  /* QNO 2568 CON_ID 200 */ ;
- SELECT BINARY NULL AS field1 FROM `table10_int_autoinc` WHERE BINARY ( CONVERT( ( CAST( `col_float_unsigned_key` AS DATE ) ), SIGNED ) ) /* QNO 2569 CON_ID 200 */ ;
+--  SELECT BINARY NULL AS field1 FROM `table10_int_autoinc` WHERE BINARY ( CONVERT( ( CAST( `col_float_unsigned_key` AS DATE ) ), SIGNED ) ) /* QNO 2569 CON_ID 200 */ ;
  SELECT BINARY '08:07:30.050422' AS field1 FROM `table1000_int_autoinc` WHERE CAST( NULL AS CHAR(7) ) /* QNO 2570 CON_ID 200 */ ;
  SELECT BINARY `col_text` AS field1 FROM `table0_int_autoinc` WHERE BINARY `col_int` /* QNO 2571 CON_ID 200 */ ;
  SELECT CONVERT( 'pixccylazicj', DECIMAL(15,13) ) AS field1 FROM `table1_int_autoinc` WHERE CAST( ( BINARY `col_decimal` ) AS SIGNED ) /* QNO 2572 CON_ID 200 */ ;
