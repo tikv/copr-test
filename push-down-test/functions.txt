@@ -111,3 +111,7 @@ md5
 sha1
 cast
 mod
+adddate
+subdate
+date_add
+date_sub
