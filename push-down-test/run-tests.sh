@@ -166,6 +166,7 @@ function run_tidb() {
   cat $2
   echo "  - Starting process..."
   export GO_FAILPOINTS="$6"
+  echo $GO_FAILPOINTS
   echo $1 -config $2 -log-file $3 -L $4 $5
   $1 -config $2 -log-file $3 -L $4 $5 &
 

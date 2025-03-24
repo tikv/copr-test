@@ -512,7 +512,7 @@
  SELECT '14:40:54.062983' AND `col_enum_key` AS field1 FROM `table0_int_autoinc` WHERE `col_blob_key` && ( ! '13:18:05.039908' ) /* QNO 513 CON_ID 192 */ ;
  SELECT NULL >> `col_char_255_key` AS field1, NULL & ( 0 AND `col_int_key` ) AS field2 FROM `table10_int_autoinc` WHERE ~ ( ( ~ ( NOT 0 ) ) AND ( 3418 & ( NULL OR NULL ) ) ) /* QNO 514 CON_ID 192 */ ;
  SELECT -26684 ^ `col_int` AS field1 FROM `table1_int_autoinc` WHERE NOT `col_bit` /* QNO 515 CON_ID 192 */ ;
- SELECT 0 << `col_double_unsigned_key` AS field1 FROM `table1000_int_autoinc` WHERE '1979-03-03 00:37:10.019711' OR `col_date_key` /* QNO 516 CON_ID 192 */ ;
+ SELECT /*+ ORDER_INDEX(table1000_int_autoinc, col_double_unsigned_key)*/ 0 << `col_double_unsigned_key` AS field1 FROM `table1000_int_autoinc` WHERE '1979-03-03 00:37:10.019711' OR `col_date_key` /* QNO 516 CON_ID 192 */ ;
  SELECT NOT `col_enum` AS field1 FROM `table20_int_autoinc` WHERE '13:50:08.021787' AND `col_year_key` /* QNO 517 CON_ID 192 */ ;
  SELECT `col_float_unsigned` XOR 7915 AS field1 FROM `table1000_int_autoinc` WHERE -6470828239601270784 && `col_date_key` /* QNO 518 CON_ID 192 */ ;
  SELECT ( ~ ( NOT 'k' ) ) >> ( NOT ( ~ '2019-11-17 18:07:55.054532' ) ) AS field1 FROM `table0_int_autoinc` WHERE NULL << `col_double_unsigned` /* QNO 519 CON_ID 192 */ ;
@@ -767,7 +767,7 @@
  SELECT `col_timestamp` << `col_date_key` AS field1 FROM `table20_int_autoinc`  /* QNO 768 CON_ID 192 */ ;
  SELECT ( 3142 >> `col_date` ) AND 7604 AS field1, -21436 << ( `col_varchar_64` XOR `col_int_key` ) AS field2, `col_time_key` XOR `col_decimal_unsigned_key` AS field3, '2008-09-25' ^ ( ! `col_float_unsigned` ) AS field4, ~ `col_binary_8` AS field5 FROM `table1000_int_autoinc` WHERE -4358921489341218816 ^ ( ~ `col_bigint_unsigned` ) /* QNO 769 CON_ID 192 */ ;
  SELECT '1995-03-05 23:51:50.036727' AND `col_binary_8` AS field1 FROM `table1_int_autoinc`  /* QNO 770 CON_ID 192 */ ;
- SELECT ! `col_bigint_key` AS field1, ( NOT 'wesipdybyjiexzykfdexsovceeygyifuvnpooxkvnmyamxyxjqnzfemqousppzetrmftntjwcnspkapmipokymarolpvtoxivrkjuejkpgan' ) << '21:27:32.017783' AS field2 FROM `table10_int_autoinc` WHERE `col_double_unsigned_key` OR '2020-05-08' /* QNO 771 CON_ID 192 */ ;
+ SELECT /*+ USE_INDEX(table10_int_autoinc, col_int_key)*/ ! `col_bigint_key` AS field1, ( NOT 'wesipdybyjiexzykfdexsovceeygyifuvnpooxkvnmyamxyxjqnzfemqousppzetrmftntjwcnspkapmipokymarolpvtoxivrkjuejkpgan' ) << '21:27:32.017783' AS field2 FROM `table10_int_autoinc` WHERE `col_double_unsigned_key` OR '2020-05-08' /* QNO 771 CON_ID 192 */ ;
  SELECT 0 OR '1990-02-04 03:34:12.046059' AS field1, NOT ( `col_varchar_1` && `col_int_unsigned` ) AS field2, ~ `col_varchar_64_key` AS field3, NOT ( ( `col_smallint` && ( ( -5281 XOR '01:48:24.036418' ) OR ( ! `col_float_unsigned_key` ) ) ) >> `col_bigint_key` ) AS field4, NOT 2036471456501596160 AS field5 FROM `table1000_int_autoinc` WHERE ( '08:27:18.050885' ^ -5845953791303614464 ) OR `col_set` /* QNO 772 CON_ID 192 */ ;
  SELECT `col_blob` >> ( ~ 'g' ) AS field1, ( `col_varbinary_32` OR `col_float_unsigned_key` ) << `col_double` AS field2 FROM `table20_int_autoinc` WHERE '08:56:09.018824' & '2012-04-05' /* QNO 773 CON_ID 192 */ ;
  SELECT ( ! ( ( 7549721825333215232 && '1992-07-14' ) XOR `col_text_key` ) ) OR ( `col_binary_8_key` && 'g' ) AS field1 FROM `table0_int_autoinc` WHERE `col_bigint_key` << '08:58:34.029152' /* QNO 774 CON_ID 192 */ ;
