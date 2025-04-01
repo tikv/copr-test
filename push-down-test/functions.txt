@@ -12,11 +12,13 @@ le
 eq
 ne
 ge
+greatest
 gt
 nulleq
 in
 intdiv
 isnull
+least
 like
 istrue
 isfalse
