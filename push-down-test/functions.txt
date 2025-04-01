@@ -65,6 +65,7 @@ json_insert
 #json_replace
 json_remove
 json_length
+json_keys
 bit_length
 length
 hex
