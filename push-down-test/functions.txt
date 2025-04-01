@@ -56,7 +56,7 @@ ifnull
 coalesce
 json_type
 json_extract
-#json_unquote
+json_unquote
 json_array
 json_object
 json_merge
