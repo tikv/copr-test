@@ -115,3 +115,4 @@ adddate
 subdate
 date_add
 date_sub
+timestampdiff
