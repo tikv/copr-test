@@ -925,7 +925,7 @@
  SELECT CONVERT( `pk` USING latin1 ) AS field1 FROM `table10_int_autoinc` WHERE CONVERT( ( BINARY `col_tinyint` ) USING utf8 ) /* QNO 926 CON_ID 104 */ ;
  SELECT CONVERT( ( CONVERT( ( CAST( ( CONVERT( ( BINARY ( CONVERT( ( CAST( ( CAST( 't' AS DECIMAL(41) ) ) AS TIME ) ) USING utf8 ) ) ) USING latin1 ) ) AS DECIMAL(11) ) ) USING latin1 ) ) USING latin1 ) AS field1, CONVERT( ( CAST( 0 AS DECIMAL(59,5) ) ) USING utf8 ) AS field2 FROM `table20_int_autoinc`  /* QNO 927 CON_ID 104 */ ;
  SELECT CONVERT( -8271986615572758528 USING utf8 ) AS field1 FROM `table0_int_autoinc` WHERE CONVERT( NULL, BINARY(2) ) /* QNO 928 CON_ID 104 */ ;
- SELECT CAST( ( CONVERT( `col_blob` USING latin1 ) ) AS UNSIGNED ) AS field1, CAST( '2009-09-27' AS DECIMAL(10,2) ) AS field2 FROM `table1000_int_autoinc` WHERE CAST( -4124171358764531712 AS BINARY ) /* QNO 929 CON_ID 104 */ ;
+ SELECT `col_blob`, CAST( ( CONVERT( `col_blob` USING latin1 ) ) AS UNSIGNED ) AS field1, CAST( '2009-09-27' AS DECIMAL(10,2) ) AS field2 FROM `table1000_int_autoinc` WHERE CAST( -4124171358764531712 AS BINARY ) /* QNO 929 CON_ID 104 */ ;
  SELECT CONVERT( `col_float_key` USING utf8 ) AS field1 FROM `table10_int_autoinc` WHERE CONVERT( `col_set_key` USING latin1 ) /* QNO 930 CON_ID 104 */ ;
  SELECT CAST( ( CAST( `col_text_key` AS TIME ) ) AS DATE ) AS field1 FROM `table1_int_autoinc` WHERE CONVERT( `col_set_key`, CHAR ) /* QNO 931 CON_ID 104 */ ;
  SELECT BINARY ( CONVERT( ( CAST( 'x' AS DATE ) ), DECIMAL(62,30) ) ) AS field1 FROM `table1_int_autoinc` WHERE CONVERT( NULL USING utf8 ) /* QNO 932 CON_ID 104 */ ;
